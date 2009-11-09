@@ -1,5 +1,5 @@
 gaia: 
-	make -C dokidoki-support TARGET=../gaia
+	make -C dokidoki-support NAME=../gaia
 
 clean:
-	make -C dokidoki-support clean
+	make -C dokidoki-support clean NAME=../gaia
