@@ -12,6 +12,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
   {'update'},
   {'draw_setup', 'draw_outline', 'draw_fill'},
   function (game)
+    math.randomseed(os.time())
     game.resources = require 'resources'
     game.add_actor{
       draw_setup = function ()
@@ -27,6 +28,10 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glColor3d(1, 1, 1)
       end,
     }
-    game.add_actor(creatures.make_predator(game, v2(300, 300)))
+    for i = 1, 10 do
+      game.add_actor(creatures.make_predator(
+        game,
+        v2(100 + math.random() * 400, 100 + math.random() * 400)))
+    end
   end))
 
