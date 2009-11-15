@@ -32,6 +32,9 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       game.add_actor(creatures.make_predator(
         game,
         v2(100 + math.random() * 400, 100 + math.random() * 400)))
+        game.add_actor(creatures.make_herbivore(
+          game,
+          v2(100 + math.random() * 400, 100 + math.random() * 400)))  
     end
   end))
 
