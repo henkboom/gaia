@@ -12,7 +12,8 @@ import 'dokidoki.base'
 
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'update'},
-  {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline', 'draw_inner_fill'},
+  {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
+   'draw_inner_fill', 'draw_foreground'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
@@ -44,15 +45,24 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       draw_fill = function ()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
       end,
+      draw_inner_outline = function ()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+      end,
+      draw_inner_fill = function ()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+      end,
+      draw_foreground = function ()
+        game.resources.foreground:draw()
+      end
     }
 
     for i = 1, 10 do
       game.add_actor(creatures.make_predator(
         game,
-        v2(100 + math.random() * 400, 100 + math.random() * 400)))
-        game.add_actor(creatures.make_herbivore(
-          game,
-          v2(100 + math.random() * 400, 100 + math.random() * 400)))  
+        v2(math.random() * C.width, math.random() * C.height)))  
+      game.add_actor(creatures.make_herbivore(
+        game,
+        v2(math.random() * C.width, math.random() * C.height)))  
     end
   end))
 
