@@ -5,6 +5,8 @@ local v2 = require 'dokidoki.v2'
 
 import 'gl'
 
+local C = require 'constants'
+
 function make_predator(game, _pos)
   local self = {}
   self.pos = _pos
@@ -22,6 +24,12 @@ function make_predator(game, _pos)
     turn = (turn + (math.random() - 0.5) * math.pi/128) * 0.99
     turn = math.max(-math.pi/32, math.min(turn, math.pi/32))
     angle = angle + turn
+
+    if self.pos.x < 0        then angle = 0 end
+    if self.pos.x > C.width  then angle = math.pi end
+    if self.pos.y < 0        then angle = math.pi/2 end
+    if self.pos.y > C.height then angle = 3 * math.pi/2 end
+
     self.pos = self.pos + v2.unit(angle) * 2
   end
 
@@ -62,6 +70,7 @@ function make_predator_cell(game, _pos, head, length)
     glColor3d(1.0, 0.4, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     game.resources.predator_outline:draw()
+    glColor3d(1, 1, 1)
   end
 
   function self.draw_fill()
