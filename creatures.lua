@@ -15,20 +15,40 @@ function make_predator(game, _pos)
   local turn = 0
   local tail = nil
 
+  local function food_direction()
+    local left_count =
+      #game.nearby(self.pos + v2.unit(angle + math.pi/6) * 45, 30, 'prey')
+    local right_count =
+      #game.nearby(self.pos + v2.unit(angle - math.pi/6) * 45, 30, 'prey')
+
+    if left_count < right_count then
+      return -1
+    elseif left_count > right_count then
+      return 1
+    else
+      return 0
+    end
+  end
+
   function self.update()
     if not tail then
       tail = make_predator_cell(game, self.pos, self, 20)
       game.add_actor(tail)
     end
 
-    turn = (turn + (math.random() - 0.5) * math.pi/128) * 0.99
+    -- turn towards food, add a random component
+    turn = turn + (food_direction() + math.random() - 0.5) * math.pi/128
+    -- damp it so that they don't spiral too much
+    turn = turn * 0.99
+    -- clamp it to limit turn speed
     turn = math.max(-math.pi/32, math.min(turn, math.pi/32))
+
     angle = angle + turn
 
-    if self.pos.x < 0        then angle = 0 end
-    if self.pos.x > C.width  then angle = math.pi end
-    if self.pos.y < 0        then angle = math.pi/2 end
-    if self.pos.y > C.height then angle = 3 * math.pi/2 end
+    if self.pos.x < C.left_bound  then angle = 0 end
+    if self.pos.x > C.right_bound then angle = math.pi end
+    if self.pos.y < C.lower_bound then angle = math.pi/2 end
+    if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
 
     self.pos = self.pos + v2.unit(angle) * 2
   end
@@ -42,6 +62,13 @@ function make_predator(game, _pos)
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     game.resources.predator_fill:draw()
+    --local left = v2.unit(math.pi/6) * 45
+    --local right = v2.unit(-math.pi/6) * 45
+    --glBegin(GL_LINE_STRIP)
+    --glVertex2d(left.x, left.y)
+    --glVertex2d(0, 0)
+    --glVertex2d(right.x, right.y)
+    --glEnd()
   end
 
   return self
