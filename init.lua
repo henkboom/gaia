@@ -38,6 +38,12 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glLoadIdentity()
         glColor3d(1, 1, 1)
       end,
+      draw_outline = function ()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+      end,
+      draw_fill = function ()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+      end,
     }
 
     for i = 1, 10 do

@@ -82,8 +82,11 @@ function make_predator_cell(game, _pos, head, length)
 end
 
 function make_herbivore(game, _pos)
-	local self ={}
+	local self = {}
 	self.pos = _pos
+  self.tags = {'prey'}
+
+
 	local vel = v2(0,0)
 	local target_vel = v2.random()
 	local count = 30 + math.random(60)
