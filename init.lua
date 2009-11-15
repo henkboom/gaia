@@ -12,7 +12,7 @@ import 'dokidoki.base'
 
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'update'},
-  {'draw_setup', 'draw_outline', 'draw_fill'},
+  {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline', 'draw_inner_fill'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
