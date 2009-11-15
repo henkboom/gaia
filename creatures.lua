@@ -87,6 +87,7 @@ function make_herbivore(game, _pos)
 	local vel = v2(0,0)
 	local target_vel
 	local count = 0
+	local offset = v2.random() * 4
 	
 	function self.update()
     if count >0 then
@@ -107,7 +108,8 @@ function make_herbivore(game, _pos)
 	end
 	
 	function self.draw_inner_outline()
-		glColor3d(0, 0.5, 1)
+		glColor3d(0, 0.5, 0.8)
+		glTranslated(offset.x,offset.y,0)
 		game.resources.herbivore_inner_outline:draw()
 	  glColor3d(1, 1, 1)
 	end
@@ -117,6 +119,7 @@ function make_herbivore(game, _pos)
   end
   
   function self.draw_inner_fill()
+    glTranslated(offset.x,offset.y,0)
     game.resources.herbivore_inner_fill:draw()
   end
 	
