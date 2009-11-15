@@ -1,5 +1,5 @@
 require 'dokidoki.module'
-[[ make_predator ]]
+[[ make_predator, make_herbivore ]]
 
 local v2 = require 'dokidoki.v2'
 
@@ -79,6 +79,38 @@ function make_predator_cell(game, _pos, head, length)
   end
 
   return self
+end
+
+function make_herbivore(game, _pos)
+	local self ={}
+	self.pos = _pos
+	local vel = v2(0,0)
+	local target_vel = v2.random()
+	local count = 30 + math.random(60)
+	
+	function self.update()
+	  self.pos = self.pos + vel
+	  vel = vel * 0.98 + target_vel *0.02
+    
+    if count >0 then
+      count= count - 1
+    else
+      count=30 + math.random(60)
+      target_vel = v2.random()
+    end
+  end
+	
+	function self.draw_outline()
+		glColor3d(0, 1, 0.2)
+		game.resources.herbivore_outline:draw()
+	  glColor3d(1, 1, 1)
+	end
+	
+	function self.draw_fill()
+    game.resources.herbivore_fill:draw()
+  end
+	
+	return self
 end
 
 return get_module_exports()
