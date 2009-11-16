@@ -16,9 +16,9 @@ function make_predator(game, _pos)
   local tail = nil
 
   local function food_direction()
-    local left_pos = self.pos + v2.unit(angle + math.pi/6) * 45
-    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 45
-    local radius = 30
+    local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
+    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 60
+    local radius = 40
     local left_count = #game.nearby(left_pos, radius, 'prey')
     local right_count = #game.nearby(right_pos, radius, 'prey')
 
