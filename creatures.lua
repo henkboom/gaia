@@ -60,11 +60,13 @@ function make_predator(game, _pos)
   function self.draw_outline()
     glColor3d(1.0, 0.4, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
+    glScaled(1.25, 1.25, 1)
     game.resources.predator_outline:draw()
   end
 
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
+    glScaled(1.25, 1.25, 1)
     game.resources.predator_fill:draw()
     --local left = v2.unit(math.pi/6) * 45
     --local right = v2.unit(-math.pi/6) * 45
@@ -84,6 +86,8 @@ function make_predator_cell(game, _pos, head, length)
 
   local angle = 0
   local tail = nil
+  local scale = length / 40 + 0.75
+  local follow_distance = 7 * scale
 
   function self.update()
     if not tail and length > 1 then
@@ -91,8 +95,8 @@ function make_predator_cell(game, _pos, head, length)
       game.add_actor(tail)
     end
 
-    if v2.mag(self.pos - head.pos) > 7 then
-      self.pos = head.pos + v2.norm(self.pos - head.pos) * 7
+    if v2.mag(self.pos - head.pos) > follow_distance then
+      self.pos = head.pos + v2.norm(self.pos - head.pos) * follow_distance
       angle = math.atan2(head.pos.y - self.pos.y, head.pos.x - self.pos.x)
     end
   end
@@ -100,12 +104,14 @@ function make_predator_cell(game, _pos, head, length)
   function self.draw_outline()
     glColor3d(1.0, 0.4, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
+    glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
     glColor3d(1, 1, 1)
   end
 
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
+    glScaled(scale, scale, 1)
     game.resources.predator_fill:draw()
   end
 
