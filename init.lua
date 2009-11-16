@@ -11,12 +11,42 @@ import 'gl'
 import 'dokidoki.base'
 
 kernel.start_main_loop(actor_scene.make_actor_scene(
-  {'update'},
+  {'trace_cleanup', 'update'},
   {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
-   'draw_inner_fill', 'draw_foreground'},
+   'draw_inner_fill', 'draw_foreground', 'draw_trace'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
+
+    -- for debugging
+    local circle =
+      imap(function (a) return v2.unit(a*math.pi/6) end, range(0, 11))
+    function game.trace_circle(source, pos, radius)
+      if not game.is_key_down(('D'):byte()) then
+        return
+      end
+      local self = {}
+      function self.trace_cleanup()
+        self.is_dead = true
+      end
+      function self.draw_trace()
+        if source then
+          glColor4d(1, 1, 1, 1/4)
+          glBegin(GL_LINES)
+          glVertex2d(source.x, source.y)
+          glVertex2d(pos.x, pos.y)
+          glEnd()
+        end
+        glColor4d(1, 1, 1, 1/2)
+        glBegin(GL_LINE_LOOP)
+        for _, v in ipairs(circle) do
+          glVertex2d(pos.x + v.x * radius, pos.y + v.y * radius)
+        end
+        glEnd()
+        glColor3d(1, 1, 1)
+      end
+      game.add_actor(self)
+    end
 
     -- for collision detection
     function game.nearby(pos, radius, tag)
