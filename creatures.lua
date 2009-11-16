@@ -68,13 +68,6 @@ function make_predator(game, _pos)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(1.25, 1.25, 1)
     game.resources.predator_fill:draw()
-    --local left = v2.unit(math.pi/6) * 45
-    --local right = v2.unit(-math.pi/6) * 45
-    --glBegin(GL_LINE_STRIP)
-    --glVertex2d(left.x, left.y)
-    --glVertex2d(0, 0)
-    --glVertex2d(right.x, right.y)
-    --glEnd()
   end
 
   return self
