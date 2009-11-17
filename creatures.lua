@@ -20,6 +20,8 @@ function make_predator(game, _pos)
   local turn = 0
   local tail = nil
   local speed = min_speed
+  local length = math.random(40)
+  local scale = length / 75 + 0.5
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
@@ -44,7 +46,7 @@ function make_predator(game, _pos)
 
   function self.update()
     if not tail then
-      tail = make_predator_cell(game, self.pos, self, math.random(40))
+      tail = make_predator_cell(game, self.pos, self, length-1)
       game.add_actor(tail)
     end
 
@@ -76,14 +78,14 @@ function make_predator(game, _pos)
   function self.draw_outline()
     glColor3d(1.0, 0.4, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
-    glScaled(1.25, 1.25, 1)
+    glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
   end
 
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
-    glScaled(1.25, 1.25, 1)
-    --game.resources.predator_fill:draw()
+    glScaled(scale, scale, 1)
+    game.resources.predator_fill:draw()
   end
 
   return self
@@ -95,8 +97,8 @@ function make_predator_cell(game, _pos, head, length)
 
   local angle = 0
   local tail = nil
-  local scale = length / 100 + 0.75
-  local follow_distance = 15 * scale
+  local scale = length / 100 + 0.25
+  local follow_distance = 30 * scale
 
   function self.update()
     if not tail and length > 1 then
