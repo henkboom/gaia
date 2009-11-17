@@ -14,6 +14,7 @@ function make_predator(game, _pos)
   local angle = 0
   local turn = 0
   local tail = nil
+  local speed = 1
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
@@ -26,10 +27,15 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, right_pos, radius)
 
     if left_count < right_count then
+      speed = speed + 0.5
       return -1
     elseif left_count > right_count then
+      speed = speed + 0.5
       return 1
     else
+      if speed>1 then
+        speed = speed - 0.5
+      end
       return 0
     end
   end
@@ -54,7 +60,7 @@ function make_predator(game, _pos)
     if self.pos.y < C.lower_bound then angle = math.pi/2 end
     if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
 
-    self.pos = self.pos + v2.unit(angle) * 2
+    self.pos = self.pos + v2.unit(angle) * speed
   end
 
   function self.draw_outline()

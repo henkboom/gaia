@@ -82,7 +82,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
       end,
       draw_foreground = function ()
-        game.resources.foreground:draw()
+        --game.resources.foreground:draw()
       end
     }
 
@@ -90,9 +90,13 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
-      game.add_actor(creatures.make_herbivore(
-        game,
-        v2(math.random() * C.width, math.random() * C.height)))  
     end
+    
+     for i = 1, 20 do 
+        game.add_actor(creatures.make_herbivore(
+          game,
+          v2(math.random() * C.width, math.random() * C.height)))  
+      end
+    
   end))
 
