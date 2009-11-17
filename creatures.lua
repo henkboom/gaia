@@ -44,7 +44,7 @@ function make_predator(game, _pos)
 
   function self.update()
     if not tail then
-      tail = make_predator_cell(game, self.pos, self, 20)
+      tail = make_predator_cell(game, self.pos, self, math.random(40))
       game.add_actor(tail)
     end
 
@@ -83,7 +83,7 @@ function make_predator(game, _pos)
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(1.25, 1.25, 1)
-    game.resources.predator_fill:draw()
+    --game.resources.predator_fill:draw()
   end
 
   return self
@@ -95,8 +95,8 @@ function make_predator_cell(game, _pos, head, length)
 
   local angle = 0
   local tail = nil
-  local scale = length / 40 + 0.75
-  local follow_distance = 7 * scale
+  local scale = length / 100 + 0.75
+  local follow_distance = 15 * scale
 
   function self.update()
     if not tail and length > 1 then
@@ -154,6 +154,7 @@ function make_herbivore(game, _pos)
 		glColor3d(0, 1, 0.2)
 		game.resources.herbivore_outline:draw()
 	  glColor3d(1, 1, 1)
+	  
 	end
 	
 	function self.draw_inner_outline()
@@ -165,6 +166,7 @@ function make_herbivore(game, _pos)
 	
 	function self.draw_fill()
     game.resources.herbivore_fill:draw()
+   
   end
   
   function self.draw_inner_fill()
