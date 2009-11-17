@@ -8,13 +8,18 @@ import 'gl'
 local C = require 'constants'
 
 function make_predator(game, _pos)
+  -- constants
+  local min_speed = 1
+  local max_speed = 5
+  local speed_increment = 0.1
+
   local self = {}
   self.pos = _pos
 
   local angle = 0
   local turn = 0
   local tail = nil
-  local speed = 1
+  local speed = min_speed
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
@@ -26,16 +31,13 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, left_pos, radius)
     game.trace_circle(self.pos, right_pos, radius)
 
-    if left_count < right_count then
-      speed = speed + 0.5
+    if left_count == 0 and right_count == 0 then
+      return false
+    elseif left_count < right_count then
       return -1
     elseif left_count > right_count then
-      speed = speed + 0.5
       return 1
     else
-      if speed>1 then
-        speed = speed - 0.5
-      end
       return 0
     end
   end
@@ -46,8 +48,16 @@ function make_predator(game, _pos)
       game.add_actor(tail)
     end
 
-    -- turn towards food, add a random component
-    turn = turn + (food_direction() + math.random() - 0.5) * math.pi/128
+    -- handle seeing food
+    local fd = food_direction()
+    if fd then
+      speed = math.min(speed + speed_increment, max_speed)
+      turn = turn + fd * math.pi/128
+    else
+      speed = math.max(speed - speed_increment, min_speed)
+    end
+    -- add a random component
+    turn = turn + (math.random() - 0.5) * math.pi/128
     -- damp it so that they don't spiral too much
     turn = turn * 0.99
     -- clamp it to limit turn speed
