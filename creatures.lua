@@ -125,7 +125,7 @@ function make_predator_cell(game, _pos, head, length)
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
-    game.resources.predator_fill:draw()
+    --game.resources.predator_fill:draw()
   end
 
   return self
@@ -136,11 +136,12 @@ function make_herbivore(game, _pos)
 	self.pos = _pos
   self.tags = {'prey'}
 
-
 	local vel = v2(0,0)
 	local target_vel
 	local count = 0
 	local offset = v2.random() * 4
+	local reproduce_timer = math.random(500)-- + 300
+	local offspring
 	
 	function self.update()
     if count >0 then
@@ -148,6 +149,14 @@ function make_herbivore(game, _pos)
     else
       count=30 + math.random(100)
       target_vel = v2.random()
+    end
+    
+    if reproduce_timer ==0 then
+       offspring = make_herbivore(game, self.pos)
+       game.add_actor(offspring)
+       reproduce_timer = math.random(500) --+ 300
+     else
+       reproduce_timer = reproduce_timer - 1
     end
     
     self.pos = self.pos + vel
