@@ -12,6 +12,8 @@ function make_predator(game, _pos)
   local min_speed = 1
   local max_speed = 5
   local speed_increment = 0.1
+  local max_turn_speed = math.pi/64
+  local turn_speed_factor = math.pi/256
 
   local self = {}
   self.pos = _pos
@@ -20,8 +22,8 @@ function make_predator(game, _pos)
   local turn = 0
   local tail = nil
   local speed = min_speed
-  local length = math.random(40)
-  local scale = length / 75 + 0.5
+  local length = math.random(4, 30)
+  local scale = length / 150 + 0.5
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
@@ -54,16 +56,16 @@ function make_predator(game, _pos)
     local fd = food_direction()
     if fd then
       speed = math.min(speed + speed_increment, max_speed)
-      turn = turn + fd * math.pi/128
+      turn = turn + fd * turn_speed_factor
     else
       speed = math.max(speed - speed_increment, min_speed)
     end
     -- add a random component
-    turn = turn + (math.random() - 0.5) * math.pi/128
+    turn = turn + (math.random() - 0.5) * turn_speed_factor
     -- damp it so that they don't spiral too much
     turn = turn * 0.99
     -- clamp it to limit turn speed
-    turn = math.max(-math.pi/32, math.min(turn, math.pi/32))
+    turn = math.max(-max_turn_speed, math.min(turn, max_turn_speed))
 
     angle = angle + turn
 
@@ -97,8 +99,8 @@ function make_predator_cell(game, _pos, head, length)
 
   local angle = 0
   local tail = nil
-  local scale = length / 100 + 0.25
-  local follow_distance = 30 * scale
+  local scale = length / 150 + 0.25
+  local follow_distance = 40 * scale
 
   function self.update()
     if not tail and length > 1 then
