@@ -26,9 +26,9 @@ function make_predator(game, _pos)
   local scale = length / 150 + 0.5
 
   local function food_direction()
-    local left_pos = self.pos + v2.unit(angle + math.pi/6) * 60
-    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 60
-    local radius = 40
+    local left_pos = self.pos + v2.unit(angle + math.pi/6) * 90
+    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 90
+    local radius = 60
     local left_count = #game.nearby(left_pos, radius, 'prey')
     local right_count = #game.nearby(right_pos, radius, 'prey')
 
@@ -43,6 +43,17 @@ function make_predator(game, _pos)
       return 1
     else
       return 0
+    end
+  end
+
+  local function eat()
+    local eat_radius = 20
+    game.trace_circle(self.pos, self.pos, eat_radius)
+    local food = game.nearby(self.pos, eat_radius, 'prey')
+    for _, f in ipairs(food) do
+      -- directly killing other creatures like this is a bad thing, the target
+      -- should have a be_eaten method
+      f.is_dead = true
     end
   end
 
@@ -75,6 +86,8 @@ function make_predator(game, _pos)
     if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
 
     self.pos = self.pos + v2.unit(angle) * speed
+
+    eat()
   end
 
   function self.draw_outline()
@@ -122,11 +135,11 @@ function make_predator_cell(game, _pos, head, length)
     glColor3d(1, 1, 1)
   end
 
-  function self.draw_fill()
-    glRotated(angle * 180 / math.pi, 0, 0, 1)
-    glScaled(scale, scale, 1)
-    --game.resources.predator_fill:draw()
-  end
+  --function self.draw_fill()
+  --  glRotated(angle * 180 / math.pi, 0, 0, 1)
+  --  glScaled(scale, scale, 1)
+  --  game.resources.predator_fill:draw()
+  --end
 
   return self
 end

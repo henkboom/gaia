@@ -85,13 +85,11 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         --game.resources.foreground:draw()
       end
     }
---[[
-    for i = 1, 10 do
+    for i = 1, 5 do
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
-    --]]
      for i = 1, 10 do 
         game.add_actor(creatures.make_herbivore(
           game,
