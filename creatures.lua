@@ -10,7 +10,7 @@ local C = require 'constants'
 function make_predator(game, _pos)
   -- constants
   local min_speed = 1
-  local max_speed = 5
+  local max_speed = 6
   local speed_increment = 0.1
   local max_turn_speed = math.pi/64
   local turn_speed_factor = math.pi/256
@@ -135,11 +135,11 @@ function make_predator_cell(game, _pos, head, length)
     glColor3d(1, 1, 1)
   end
 
-  --function self.draw_fill()
-  --  glRotated(angle * 180 / math.pi, 0, 0, 1)
-  --  glScaled(scale, scale, 1)
-  --  game.resources.predator_fill:draw()
-  --end
+  function self.draw_fill()
+    glRotated(angle * 180 / math.pi, 0, 0, 1)
+    glScaled(scale, scale, 1)
+    game.resources.predator_fill:draw()
+  end
 
   return self
 end

@@ -9,6 +9,7 @@ local creatures = require 'creatures'
 
 import 'gl'
 import 'dokidoki.base'
+kernel.set_video_mode(1024,768)
 
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'trace_cleanup', 'update'},
