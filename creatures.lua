@@ -1,5 +1,5 @@
 require 'dokidoki.module'
-[[ make_predator, make_herbivore ]]
+[[ make_predator, make_herbivore, make_foliage ]]
 
 local v2 = require 'dokidoki.v2'
 
@@ -10,7 +10,7 @@ local C = require 'constants'
 function make_predator(game, _pos)
   -- constants
   local min_speed = 1
-  local max_speed = 6
+  local max_speed = 5.5
   local speed_increment = 0.1
   local max_turn_speed = math.pi/64
   local turn_speed_factor = math.pi/256
@@ -153,10 +153,50 @@ function make_herbivore(game, _pos)
 	local target_vel
 	local count = 0
 	local offset = v2.random() * 4
-	local reproduce_timer = math.random(500)-- + 300
-	local offspring
+	local reproduce_timer = math.random(800)
+	local hunger = 0.5
+	
+	local function food_direction()
+	  local detection_sphere = self.pos + v2.unit(angle + math.pi/6) * 90
+    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 90
+    local radius = 60
+    local left_count = #game.nearby(left_pos, radius, 'prey')
+    local right_count = #game.nearby(right_pos, radius, 'prey')
+	  
+	  
+  end
+	
+	
+	local function eat()
+    local eat_radius = 20
+    --game.trace_circle(self.pos, self.pos, eat_radius)
+    local food = game.nearby(self.pos, eat_radius, 'foliage')
+    
+    for _, f in ipairs(food) do
+      hunger =  hunger + 0.25
+      f.is_dead = true
+    end
+  end
+  
+  local function reproduce()
+    game.add_actor(make_herbivore(game, self.pos))
+  end 
 	
 	function self.update()
+	  eat()
+	  hunger = hunger - 0.0005
+	  
+	  if hunger>=1 then
+	    reproduce()
+	    hunger = 0.5
+	  elseif hunger<=0 then
+	    self.is_dead = true
+	  end 
+	  
+	  --measuring hunger
+	  game.trace_circle(self.pos, self.pos, 100)
+	  game.trace_circle(self.pos, self.pos, hunger * 100)
+	  
     if count >0 then
       count= count - 1
     else
@@ -164,16 +204,14 @@ function make_herbivore(game, _pos)
       target_vel = v2.random()
     end
     
-    if reproduce_timer ==0 then
-       offspring = make_herbivore(game, self.pos)
-       game.add_actor(offspring)
-       reproduce_timer = math.random(500) --+ 300
-     else
-       reproduce_timer = reproduce_timer - 1
-    end
-    
     self.pos = self.pos + vel
 	  vel = vel * 0.98 + target_vel *0.02
+	  
+	  --bound herbivores to screen
+	  if self.pos.x < C.left_bound  then self.pos.x = C.left_bound end
+    if self.pos.x > C.right_bound then self.pos.x = C.right_bound end
+    if self.pos.y < C.lower_bound then self.pos.y = C.lower_bound end
+    if self.pos.y > C.upper_bound then self.pos.y = C.upper_bound end
   end
 	
 	function self.draw_outline()
@@ -192,7 +230,6 @@ function make_herbivore(game, _pos)
 	
 	function self.draw_fill()
     game.resources.herbivore_fill:draw()
-   
   end
   
   function self.draw_inner_fill()
@@ -201,6 +238,24 @@ function make_herbivore(game, _pos)
   end
 	
 	return self
+end
+
+function make_foliage(game, _pos)
+  local self = {}
+  self.pos = _pos
+  self.tags = {'foliage'}
+  
+  function self.draw_outline()
+		glColor3d(1, 0.3, 0.2)
+		game.resources.herbivore_inner_outline:draw()
+	  glColor3d(1, 1, 1)
+	end
+  
+  function self.draw_fill()
+    game.resources.herbivore_inner_fill:draw()
+  end
+
+  return self
 end
 
 return get_module_exports()

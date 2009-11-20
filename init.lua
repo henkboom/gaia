@@ -86,16 +86,28 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         --game.resources.foreground:draw()
       end
     }
+    
+    game.add_actor{
+      update=function()
+        if math.random(100) < 10 then
+          game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height)))
+        end
+      end
+    }
+    
+    
+    --[[
     for i = 1, 5 do
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
-     for i = 1, 10 do 
-        game.add_actor(creatures.make_herbivore(
-          game,
-          v2(math.random() * C.width, math.random() * C.height)))  
-      end
+    ]]
+    for i = 1, 1000 do 
+      game.add_actor(creatures.make_herbivore(
+      game,
+      v2(math.random() * C.width, math.random() * C.height)))  
+    end
     
   end))
 
