@@ -2,10 +2,10 @@ require 'dokidoki.module'
 [[ make_predator, make_herbivore, make_foliage ]]
 
 local v2 = require 'dokidoki.v2'
-
+local C = require 'constants'
 import 'gl'
 
-local C = require 'constants'
+--- Predator Head ------------------------------------------------------------
 
 function make_predator(game, _pos)
   -- constants
@@ -24,6 +24,8 @@ function make_predator(game, _pos)
   local speed = min_speed
   local length = math.random(4, 30)
   local scale = length / 150 + 0.5
+  
+  local attacking =false
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 90
@@ -51,9 +53,8 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
-      -- directly killing other creatures like this is a bad thing, the target
-      -- should have a be_eaten method
-      f.is_dead = true
+      game.resources.predator_eat:play(.08)
+      f.is_dead = true      
     end
   end
 
@@ -66,10 +67,16 @@ function make_predator(game, _pos)
     -- handle seeing food
     local fd = food_direction()
     if fd then
+      -- play sound when on the attack
+      if attacking == false then
+        game.resources.predator_attack:play(.04)
+        attacking=true
+      end
       speed = math.min(speed + speed_increment, max_speed)
       turn = turn + fd * turn_speed_factor
     else
       speed = math.max(speed - speed_increment, min_speed)
+      attacking = false
     end
     -- add a random component
     turn = turn + (math.random() - 0.5) * turn_speed_factor
@@ -79,12 +86,10 @@ function make_predator(game, _pos)
     turn = math.max(-max_turn_speed, math.min(turn, max_turn_speed))
 
     angle = angle + turn
-
     if self.pos.x < C.left_bound  then angle = 0 end
     if self.pos.x > C.right_bound then angle = math.pi end
     if self.pos.y < C.lower_bound then angle = math.pi/2 end
     if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
-
     self.pos = self.pos + v2.unit(angle) * speed
 
     eat()
@@ -105,6 +110,8 @@ function make_predator(game, _pos)
 
   return self
 end
+
+--- Predator Cell ------------------------------------------------------------
 
 function make_predator_cell(game, _pos, head, length)
   local self = {}
@@ -144,6 +151,8 @@ function make_predator_cell(game, _pos, head, length)
   return self
 end
 
+--- Herbivore ----------------------------------------------------------------
+
 function make_herbivore(game, _pos)
 	local self = {}
 	self.pos = _pos
@@ -156,29 +165,34 @@ function make_herbivore(game, _pos)
 	local reproduce_timer = math.random(800)
 	local hunger = 0.5
 	
-	local function food_direction()
-	  local detection_sphere = self.pos + v2.unit(angle + math.pi/6) * 90
-    local right_pos = self.pos + v2.unit(angle - math.pi/6) * 90
-    local radius = 60
-    local left_count = #game.nearby(left_pos, radius, 'prey')
-    local right_count = #game.nearby(right_pos, radius, 'prey')
-	  
-	  
-  end
-	
-	
 	local function eat()
     local eat_radius = 20
     --game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'foliage')
     
     for _, f in ipairs(food) do
-      hunger =  hunger + 0.25
+      
+      -- random sound played for eating (1-5)
+      local random_num = math.random(5)
+      if random_num == 1 then
+        game.resources.herbivore_eat1:play(.02)
+      elseif random_num == 2 then
+        game.resources.herbivore_eat2:play(.02)
+      elseif random_num == 3 then
+        game.resources.herbivore_eat3:play(.02)
+      elseif random_num == 4 then
+        game.resources.herbivore_eat4:play(.02)
+      else
+        game.resources.herbivore_eat5:play(.02)
+      end
+
+      hunger =  hunger + 0.28
       f.is_dead = true
     end
   end
   
   local function reproduce()
+    game.resources.herbivore_reproduce:play(.25)
     game.add_actor(make_herbivore(game, self.pos))
   end 
 	
@@ -190,10 +204,11 @@ function make_herbivore(game, _pos)
 	    reproduce()
 	    hunger = 0.5
 	  elseif hunger<=0 then
+	    game.resources.herbivore_starve:play(.06)
 	    self.is_dead = true
 	  end 
 	  
-	  --measuring hunger
+	  -- Measuring Hunger
 	  game.trace_circle(self.pos, self.pos, 100)
 	  game.trace_circle(self.pos, self.pos, hunger * 100)
 	  
@@ -239,6 +254,8 @@ function make_herbivore(game, _pos)
 	
 	return self
 end
+
+--- Foliage -----------------------------------------------------------------
 
 function make_foliage(game, _pos)
   local self = {}
