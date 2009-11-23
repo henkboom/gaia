@@ -164,6 +164,7 @@ function make_herbivore(game, _pos)
 	local offset = v2.random() * 4
 	local reproduce_timer = math.random(800)
 	local hunger = 0.5
+  local desperation = 0
 	
 	local function eat()
     local eat_radius = 20
@@ -186,7 +187,7 @@ function make_herbivore(game, _pos)
         game.resources.herbivore_eat5:play(.02)
       end
 
-      hunger =  hunger + 0.28
+      hunger =  hunger - 0.28
       f.is_dead = true
     end
   end
@@ -198,33 +199,40 @@ function make_herbivore(game, _pos)
 	
 	function self.update()
 	  eat()
-	  hunger = hunger - 0.0005
+	  hunger = hunger + 0.0005
 	  
-	  if hunger>=1 then
+	  if hunger <= 0 then
 	    reproduce()
 	    hunger = 0.5
-	  elseif hunger<=0 then
+	  elseif hunger >= 1 then
 	    game.resources.herbivore_starve:play(.06)
 	    self.is_dead = true
 	  end 
 	  
 	  -- Measuring Hunger
 	  game.trace_circle(self.pos, self.pos, 50)
-	  game.trace_circle(self.pos, self.pos, hunger * 50)
+	  game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
 	  
-    if count >0 then
-      count= count - 1
+    if count > 0 then
+      count = count - 1
     else
-      count=20 + math.random(20)
       game.trace_circle(self.pos, self.pos, 100)
       local food = game.nearby(self.pos, 100, 'foliage')
       table.sort(food, function (a, b)
         return v2.sqrmag(a.pos - self.pos) < v2.sqrmag(b.pos - self.pos)
       end)
-      target_vel = v2.random()
-      if food[1] and food[1].pos ~= self.pos then
-        target_vel = target_vel + v2.norm(food[1].pos - self.pos)
+
+      if #food > 0 then
+        desperation = 0
+        if food[1].pos ~= self.pos then
+          target_vel = v2.norm(food[1].pos - self.pos)
+        end
+      else
+        desperation = desperation + 1
+        target_vel = v2.random() * (1 + desperation/5)
       end
+
+      count = 20 + desperation * 20 + math.random(20)
     end
     
     self.pos = self.pos + vel
