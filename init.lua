@@ -75,7 +75,7 @@ end
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'trace_cleanup', 'preupdate', 'update'},
   {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
-   'draw_inner_fill', 'draw_foreground', 'draw_trace'},
+   'draw_inner_fill', 'draw_trace'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
@@ -137,9 +137,6 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       draw_inner_fill = function ()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
       end,
-      draw_foreground = function ()
-        --game.resources.foreground:draw()
-      end
     }
     
     game.add_actor{
