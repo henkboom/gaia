@@ -1,6 +1,12 @@
 local mixer = require 'mixer'
 local graphics = require 'dokidoki.graphics'
 
+local dummy_sound = {play = function() print('playing non-existent file!') end}
+
+local function try_load_wav (filename)
+  return mixer.load_wav(filename) or dummy_sound
+end
+
 return {
   
   --- Sprite Graphics --------------------------------------------------------
@@ -16,19 +22,19 @@ return {
 
   --- Sounds -----------------------------------------------------------------
   
-  --predator_hunting = mixer.load_wav("sounds/predator_hunting.wav"),
-  --predator_mating = mixer.load_wav("predator.wav"),
-  predator_attack = mixer.load_wav("sounds/predator_attack.wav"),
-  predator_eat = mixer.load_wav("sounds/predator_eat.wav"),
-  --predator_reproduce = mixer.load_wav("predator.wav"),
-  --predator_starve = mixer.load_wav("sounds/predator_starve.wav"),
+  --predator_hunting = try_load_wav("sounds/predator_hunting.wav"),
+  --predator_mating = try_load_wav("predator.wav"),
+  predator_attack = try_load_wav("sounds/predator_attack.wav"),
+  predator_eat = try_load_wav("sounds/predator_eat.wav"),
+  --predator_reproduce = try_load_wav("predator.wav"),
+  --predator_starve = try_load_wav("sounds/predator_starve.wav"),
   
-  --herbivore_drone = mixer.load_wav("sounds/herbivore_drone.wav"),
-  herbivore_reproduce = mixer.load_wav("sounds/herbivore_reproduce.wav"),
-  herbivore_starve = mixer.load_wav("sounds/herbivore_starve.wav"),
-  herbivore_eat1 = mixer.load_wav("sounds/herbivore_eat1.wav"),
-  herbivore_eat2 = mixer.load_wav("sounds/herbivore_eat2.wav"),
-  herbivore_eat3 = mixer.load_wav("sounds/herbivore_eat3.wav"),
-  herbivore_eat4 = mixer.load_wav("sounds/herbivore_eat4.wav"),
-  herbivore_eat5 = mixer.load_wav("sounds/herbivore_eat5.wav"),
+  --herbivore_drone = try_load_wav("sounds/herbivore_drone.wav"),
+  herbivore_reproduce = try_load_wav("sounds/herbivore_reproduce.wav"),
+  herbivore_starve = try_load_wav("sounds/herbivore_starve.wav"),
+  herbivore_eat1 = try_load_wav("sounds/herbivore_eat1.wav"),
+  herbivore_eat2 = try_load_wav("sounds/herbivore_eat2.wav"),
+  herbivore_eat3 = try_load_wav("sounds/herbivore_eat3.wav"),
+  herbivore_eat4 = try_load_wav("sounds/herbivore_eat4.wav"),
+  herbivore_eat5 = try_load_wav("sounds/herbivore_eat5.wav"),
 }
