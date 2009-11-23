@@ -9,9 +9,9 @@ import 'gl'
 
 function make_predator(game, _pos)
   -- constants
-  local min_speed = 1
-  local max_speed = 5.5
-  local speed_increment = 0.1
+  local min_speed = 0.7
+  local max_speed = 3
+  local speed_increment = 0.05
   local max_turn_speed = math.pi/64
   local turn_speed_factor = math.pi/256
 
@@ -33,7 +33,7 @@ function make_predator(game, _pos)
     old_tail.set_head(tail)
     game.add_actor(tail)
     length = length + 1
-    if length >= 10 and length % 5 == 0 then
+    if length >= 12 and length % 6 == 0 then
       game.add_actor(make_predator(game, self.pos))
     end
   end
@@ -65,7 +65,7 @@ function make_predator(game, _pos)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
       game.resources.predator_eat:play(.08)
-      hunger = hunger - 0.2
+      hunger = hunger - 0.1
       f.is_dead = true
     end
   end
@@ -93,7 +93,7 @@ function make_predator(game, _pos)
     -- add a random component
     turn = turn + (math.random() - 0.5) * turn_speed_factor
     -- damp it so that they don't spiral too much
-    turn = turn * 0.99
+    turn = turn * 0.98
     -- clamp it to limit turn speed
     turn = math.max(-max_turn_speed, math.min(turn, max_turn_speed))
 
@@ -105,7 +105,7 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.0001 * length
+    hunger = hunger + 0.003/60 * length
     eat()
     if hunger >= 1 then
       self.is_dead = true
@@ -257,18 +257,18 @@ function make_herbivore(game, _pos)
         end)
         -- eat closest one
         if food[1].pos ~= self.pos then
-          target_vel = v2.norm(food[1].pos - self.pos)
+          target_vel = v2.norm(food[1].pos - self.pos) / 2
         end
       else
         desperation = desperation + 1
-        target_vel = v2.random() * (1 + desperation/5)
+        target_vel = v2.random() * (1 + desperation/5) / 2
       end
 
       count = 20 + desperation * 20 + math.random(20)
     end
     
     self.pos = self.pos + vel
-	  vel = vel * 0.98 + target_vel *0.02
+	  vel = vel * 0.98 + target_vel * 0.02
 	  
 	  --bound herbivores to screen
 	  if self.pos.x < C.left_bound  then self.pos.x = C.left_bound end
@@ -312,7 +312,7 @@ function make_foliage(game, _pos)
   
   
   function self.draw_outline()
-		glColor3d(1, 0.3, 0.2)
+		glColor3d(0.3, 0.2, 0.1)
 		game.resources.herbivore_inner_outline:draw()
 	  glColor3d(1, 1, 1)
 	end
