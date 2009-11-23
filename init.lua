@@ -58,7 +58,7 @@ function init_collision_detection(game, tags)
           --game.trace_circle(pos, v2((i+0.5) * cell_size, (j+0.5) * cell_size), 2)
           if grid[i][j] then
             for _, a in ipairs(grid[i][j]) do
-              if v2.sqrmag(a.pos - pos) <= radius * radius then
+              if not a.is_dead and v2.sqrmag(a.pos - pos) <= radius*radius then
                 actors[n] = a
                 n = n + 1
               end
