@@ -117,9 +117,9 @@ function make_predator(game, _pos)
       hunger = hunger + 0.5
       lengthen()
     end
-	  -- Measuring Hunger
-	  game.trace_circle(self.pos, self.pos, 50)
-	  game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
+    -- Measuring Hunger
+    game.trace_circle(self.pos, self.pos, 50)
+    game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
   end
 
   function self.draw_outline()
@@ -189,19 +189,19 @@ end
 --- Herbivore ----------------------------------------------------------------
 
 function make_herbivore(game, _pos)
-	local self = {}
-	self.pos = _pos
+  local self = {}
+  self.pos = _pos
   self.tags = {'prey'}
 
-	local vel = v2(0,0)
-	local target_vel
-	local count = 0
-	local offset = v2.random() * 4
-	local reproduce_timer = math.random(800)
-	local hunger = 0.5
+  local vel = v2(0,0)
+  local target_vel
+  local count = 0
+  local offset = v2.random() * 4
+  local reproduce_timer = math.random(800)
+  local hunger = 0.5
   local desperation = 0
-	
-	local function eat()
+  
+  local function eat()
     local eat_radius = 20
     --game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'foliage')
@@ -231,23 +231,23 @@ function make_herbivore(game, _pos)
     game.resources.herbivore_reproduce:play(.25)
     game.add_actor(make_herbivore(game, self.pos))
   end 
-	
-	function self.update()
-	  eat()
-	  hunger = hunger + 0.0005
-	  
-	  if hunger <= 0 then
-	    reproduce()
-	    hunger = 0.5
-	  elseif hunger >= 1 then
-	    game.resources.herbivore_starve:play(.06)
-	    self.is_dead = true
-	  end 
-	  
-	  -- Measuring Hunger
-	  game.trace_circle(self.pos, self.pos, 50)
-	  game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
-	  
+  
+  function self.update()
+    eat()
+    hunger = hunger + 0.0005
+    
+    if hunger <= 0 then
+      reproduce()
+      hunger = 0.5
+    elseif hunger >= 1 then
+      game.resources.herbivore_starve:play(.06)
+      self.is_dead = true
+    end 
+    
+    -- Measuring Hunger
+    game.trace_circle(self.pos, self.pos, 50)
+    game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
+    
     if count > 0 then
       count = count - 1
     else
@@ -278,24 +278,24 @@ function make_herbivore(game, _pos)
     end
     
     self.pos = self.pos + vel
-	  vel = vel * 0.98 + target_vel * 0.02
+    vel = vel * 0.98 + target_vel * 0.02
   end
-	
-	function self.draw_outline()
-		glColor3d(0, 1, 0.2)
-		game.resources.herbivore_outline:draw()
-	  glColor3d(1, 1, 1)
-	  
-	end
-	
-	function self.draw_inner_outline()
-		glColor3d(0, 0.5, 0.8)
-		glTranslated(offset.x,offset.y,0)
-		game.resources.herbivore_inner_outline:draw()
-	  glColor3d(1, 1, 1)
-	end
-	
-	function self.draw_fill()
+  
+  function self.draw_outline()
+    glColor3d(0, 1, 0.2)
+    game.resources.herbivore_outline:draw()
+    glColor3d(1, 1, 1)
+    
+  end
+  
+  function self.draw_inner_outline()
+    glColor3d(0, 0.5, 0.8)
+    glTranslated(offset.x,offset.y,0)
+    game.resources.herbivore_inner_outline:draw()
+    glColor3d(1, 1, 1)
+  end
+  
+  function self.draw_fill()
     game.resources.herbivore_fill:draw()
   end
   
@@ -303,8 +303,8 @@ function make_herbivore(game, _pos)
     glTranslated(offset.x,offset.y,0)
     game.resources.herbivore_inner_fill:draw()
   end
-	
-	return self
+  
+  return self
 end
 
 --- Foliage -----------------------------------------------------------------
@@ -316,11 +316,11 @@ function make_foliage(game, _pos)
   
   
   function self.draw_outline()
-		glColor3d(0.3, 0.2, 0.1)
-		game.resources.herbivore_inner_outline:draw()
-	  glColor3d(1, 1, 1)
-	end
-	
+    glColor3d(0.3, 0.2, 0.1)
+    game.resources.herbivore_inner_outline:draw()
+    glColor3d(1, 1, 1)
+  end
+  
   function self.draw_fill()
     game.resources.herbivore_inner_fill:draw()
   end
