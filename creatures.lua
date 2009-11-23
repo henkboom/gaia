@@ -262,12 +262,13 @@ function make_foliage(game, _pos)
   self.pos = _pos
   self.tags = {'foliage'}
   
+  
   function self.draw_outline()
 		glColor3d(1, 0.3, 0.2)
 		game.resources.herbivore_inner_outline:draw()
 	  glColor3d(1, 1, 1)
 	end
-  
+	
   function self.draw_fill()
     game.resources.herbivore_inner_fill:draw()
   end
