@@ -18,14 +18,25 @@ function make_predator(game, _pos)
   local self = {}
   self.pos = _pos
 
-  local angle = 0
+  local angle = math.random() * 2 * math.pi
   local turn = 0
   local tail = nil
   local speed = min_speed
-  local length = math.random(4, 30)
+  local length = 5
   local scale = length / 150 + 0.5
-  
+  local hunger = 0.5
   local attacking =false
+
+  local function lengthen ()
+    local old_tail = tail
+    tail = make_predator_cell(game, self.pos, self, length, old_tail)
+    old_tail.set_head(tail)
+    game.add_actor(tail)
+    length = length + 1
+    if length >= 10 and length % 5 == 0 then
+      game.add_actor(make_predator(game, self.pos))
+    end
+  end
 
   local function food_direction()
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 90
@@ -54,7 +65,8 @@ function make_predator(game, _pos)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
       game.resources.predator_eat:play(.08)
-      f.is_dead = true      
+      hunger = hunger - 0.2
+      f.is_dead = true
     end
   end
 
@@ -92,7 +104,18 @@ function make_predator(game, _pos)
     if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
     self.pos = self.pos + v2.unit(angle) * speed
 
+    -- hunger/food
+    hunger = hunger + 0.0001 * length
     eat()
+    if hunger >= 1 then
+      self.is_dead = true
+    elseif hunger <= 0 then
+      hunger = hunger + 0.5
+      lengthen()
+    end
+	  -- Measuring Hunger
+	  game.trace_circle(self.pos, self.pos, 50)
+	  game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
   end
 
   function self.draw_outline()
@@ -113,12 +136,12 @@ end
 
 --- Predator Cell ------------------------------------------------------------
 
-function make_predator_cell(game, _pos, head, length)
+-- tail is optional
+function make_predator_cell(game, _pos, head, length, tail)
   local self = {}
   self.pos = _pos
 
   local angle = 0
-  local tail = nil
   local scale = length / 150 + 0.25
   local follow_distance = 40 * scale
 
@@ -128,8 +151,12 @@ function make_predator_cell(game, _pos, head, length)
       game.add_actor(tail)
     end
 
-    if v2.mag(self.pos - head.pos) > follow_distance then
-      self.pos = head.pos + v2.norm(self.pos - head.pos) * follow_distance
+    if head.is_dead then
+      self.is_dead = true
+    else
+      if v2.mag(self.pos - head.pos) > follow_distance then
+        self.pos = head.pos + v2.norm(self.pos - head.pos) * follow_distance
+      end
       angle = math.atan2(head.pos.y - self.pos.y, head.pos.x - self.pos.x)
     end
   end
@@ -146,6 +173,10 @@ function make_predator_cell(game, _pos, head, length)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_fill:draw()
+  end
+
+  function self.set_head(new_head)
+    head = new_head
   end
 
   return self
@@ -218,12 +249,13 @@ function make_herbivore(game, _pos)
     else
       game.trace_circle(self.pos, self.pos, 100)
       local food = game.nearby(self.pos, 100, 'foliage')
-      table.sort(food, function (a, b)
-        return v2.sqrmag(a.pos - self.pos) < v2.sqrmag(b.pos - self.pos)
-      end)
-
       if #food > 0 then
         desperation = 0
+        -- sort food
+        table.sort(food, function (a, b)
+          return v2.sqrmag(a.pos - self.pos) < v2.sqrmag(b.pos - self.pos)
+        end)
+        -- eat closest one
         if food[1].pos ~= self.pos then
           target_vel = v2.norm(food[1].pos - self.pos)
         end
