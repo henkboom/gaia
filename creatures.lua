@@ -209,14 +209,22 @@ function make_herbivore(game, _pos)
 	  end 
 	  
 	  -- Measuring Hunger
-	  game.trace_circle(self.pos, self.pos, 100)
-	  game.trace_circle(self.pos, self.pos, hunger * 100)
+	  game.trace_circle(self.pos, self.pos, 50)
+	  game.trace_circle(self.pos, self.pos, hunger * 50)
 	  
     if count >0 then
       count= count - 1
     else
-      count=30 + math.random(100)
+      count=20 + math.random(20)
+      game.trace_circle(self.pos, self.pos, 100)
+      local food = game.nearby(self.pos, 100, 'foliage')
+      table.sort(food, function (a, b)
+        return v2.sqrmag(a.pos - self.pos) < v2.sqrmag(b.pos - self.pos)
+      end)
       target_vel = v2.random()
+      if food[1] and food[1].pos ~= self.pos then
+        target_vel = target_vel + v2.norm(food[1].pos - self.pos)
+      end
     end
     
     self.pos = self.pos + vel
