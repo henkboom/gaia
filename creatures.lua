@@ -113,6 +113,7 @@ function make_predator(game, _pos)
     hunger = hunger + 0.002/60 * length
     eat()
     if hunger >= 1 then
+      game.resources.predator_starve:play(.1)
       self.is_dead = true
     elseif hunger <= 0 then
       hunger = hunger + 0.5
@@ -124,7 +125,7 @@ function make_predator(game, _pos)
   end
 
   function self.draw_outline()
-    glColor3d(1.0, 0.4, 0.7)
+    glColor3d(1.0, 0, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -167,7 +168,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   end
 
   function self.draw_outline()
-    glColor3d(1.0, 0.4, 0.7)
+    glColor3d(1.0, 0, 0.7)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -201,6 +202,8 @@ function make_herbivore(game, _pos)
   local reproduce_timer = math.random(800)
   local hunger = 0.5
   local desperation = 0
+  local inner_rotation = math.random(360)
+  local scale= 0.8
   
   local function eat()
     local eat_radius = 20
@@ -209,6 +212,7 @@ function make_herbivore(game, _pos)
     
     for _, f in ipairs(food) do
       
+
       -- random sound played for eating (1-5)
       local random_num = math.random(5)
       if random_num == 1 then
@@ -236,6 +240,12 @@ function make_herbivore(game, _pos)
   function self.update()
     eat()
     hunger = hunger + 0.0003
+    
+    if inner_rotation+1 >= 360 then
+      inner_rotation = 0
+    else
+      inner_rotation = inner_rotation + 1
+    end
     
     if hunger <= 0 then
       reproduce()
@@ -290,8 +300,9 @@ function make_herbivore(game, _pos)
   end
   
   function self.draw_inner_outline()
-    glColor3d(0, 0.5, 0.8)
-    glTranslated(offset.x,offset.y,0)
+    glColor3d(0, 0.43, 1)
+    glRotated(inner_rotation, 0, 0, 1)
+    glScaled(scale, scale, 1)
     game.resources.herbivore_inner_outline:draw()
     glColor3d(1, 1, 1)
   end
@@ -301,7 +312,8 @@ function make_herbivore(game, _pos)
   end
   
   function self.draw_inner_fill()
-    glTranslated(offset.x,offset.y,0)
+    glRotated(inner_rotation, 0, 0, 1)
+    glScaled(scale, scale, 1)
     game.resources.herbivore_inner_fill:draw()
   end
   
@@ -318,12 +330,12 @@ function make_foliage(game, _pos)
   
   function self.draw_outline()
     glColor3d(0.3, 0.2, 0.1)
-    game.resources.herbivore_inner_outline:draw()
+    game.resources.foliage_outline:draw()
     glColor3d(1, 1, 1)
   end
   
   function self.draw_fill()
-    game.resources.herbivore_inner_fill:draw()
+    game.resources.foliage_fill:draw()
   end
 
   return self

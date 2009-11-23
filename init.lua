@@ -182,14 +182,14 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     }
       
     --- Load Predators -------------------------------------------------------
-    for i = 1, 2 do
+    for i = 1, 3 do
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
   
     --- Load Herbivores ------------------------------------------------------
-    for i = 1, 15 do 
+    for i = 1, 18 do 
       game.add_actor(creatures.make_herbivore(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
