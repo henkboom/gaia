@@ -139,7 +139,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end,
     }
     
---- Generate Foliage Over Time -----------------------------------------------
+    --- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
         if math.random(100) < 10 then
@@ -148,22 +148,21 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end
     }
       
---- Load Predators -----------------------------------------------------------
-    for i = 1, 3 do
+    --- Load Predators -------------------------------------------------------
+    for i = 1, 2 do
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
   
---- Load Herbivores ----------------------------------------------------------
+    --- Load Herbivores ------------------------------------------------------
     for i = 1, 10 do 
       game.add_actor(creatures.make_herbivore(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
     
---- Load Foliage -----------------------------------------------------------
-   
+    --- Load Foliage -------------------------------------------------------
     for i = 1, 70 do 
       game.add_actor(creatures.make_foliage(
       game,
