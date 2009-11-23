@@ -76,32 +76,36 @@ function make_predator(game, _pos)
       game.add_actor(tail)
     end
 
-    -- handle seeing food
-    local fd = food_direction()
-    if fd then
-      -- play sound when on the attack
-      if attacking == false then
-        game.resources.predator_attack:play(.04)
-        attacking=true
+    local bounds_correction = game.get_bounds_correction(self.pos)
+    if bounds_correction == v2.zero then
+      -- handle seeing food
+      local fd = food_direction()
+      if fd then
+        -- play sound when on the attack
+        if attacking == false then
+          game.resources.predator_attack:play(.04)
+          attacking=true
+        end
+        speed = math.min(speed + speed_increment, max_speed)
+        turn = turn + fd * turn_speed_factor
+      else
+        speed = math.max(speed - speed_increment, min_speed)
+        attacking = false
       end
-      speed = math.min(speed + speed_increment, max_speed)
-      turn = turn + fd * turn_speed_factor
     else
-      speed = math.max(speed - speed_increment, min_speed)
-      attacking = false
+      local left = v2.cross(v2.unit(angle), bounds_correction) >= 0
+      turn = turn + turn_speed_factor * (left and 0.5 or -0.5)
     end
+
     -- add a random component
     turn = turn + (math.random() - 0.5) * turn_speed_factor
+
     -- damp it so that they don't spiral too much
     turn = turn * 0.98
     -- clamp it to limit turn speed
     turn = math.max(-max_turn_speed, math.min(turn, max_turn_speed))
 
     angle = angle + turn
-    if self.pos.x < C.left_bound  then angle = 0 end
-    if self.pos.x > C.right_bound then angle = math.pi end
-    if self.pos.y < C.lower_bound then angle = math.pi/2 end
-    if self.pos.y > C.upper_bound then angle = 3 * math.pi/2 end
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
@@ -261,7 +265,13 @@ function make_herbivore(game, _pos)
         end
       else
         desperation = desperation + 1
-        target_vel = v2.random() * (1 + desperation/5) / 2
+
+        local bounds_correction = game.get_bounds_correction(self.pos)
+        if bounds_correction == v2.zero then
+          target_vel = bounds_correction + v2.random() / 2
+        else
+          target_vel = v2.random() * (1 + desperation/5) / 2
+        end
       end
 
       count = 20 + desperation * 20 + math.random(20)
@@ -269,12 +279,6 @@ function make_herbivore(game, _pos)
     
     self.pos = self.pos + vel
 	  vel = vel * 0.98 + target_vel * 0.02
-	  
-	  --bound herbivores to screen
-	  if self.pos.x < C.left_bound  then self.pos.x = C.left_bound end
-    if self.pos.x > C.right_bound then self.pos.x = C.right_bound end
-    if self.pos.y < C.lower_bound then self.pos.y = C.lower_bound end
-    if self.pos.y > C.upper_bound then self.pos.y = C.upper_bound end
   end
 	
 	function self.draw_outline()

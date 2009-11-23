@@ -114,6 +114,12 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     init_tracing(game)
     init_collision_detection(game, {'prey', 'foliage'})
 
+    function game.get_bounds_correction(pos)
+      return v2(
+        pos.x < C.left_bound and 1 or pos.x > C.right_bound and -1 or 0,
+        pos.y < C.lower_bound and 1 or pos.y > C.upper_bound and -1 or 0)
+    end
+
     game.add_actor{
       draw_setup = function ()
         glClearColor(0.0, 0.0, 0.0, 0)
