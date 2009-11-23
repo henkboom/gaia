@@ -17,6 +17,7 @@ function make_predator(game, _pos)
 
   local self = {}
   self.pos = _pos
+  self.tags = {'predator'}
 
   local angle = math.random() * 2 * math.pi
   local turn = 0
@@ -109,7 +110,7 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.003/60 * length
+    hunger = hunger + 0.002/60 * length
     eat()
     if hunger >= 1 then
       self.is_dead = true
@@ -191,7 +192,7 @@ end
 function make_herbivore(game, _pos)
   local self = {}
   self.pos = _pos
-  self.tags = {'prey'}
+  self.tags = {'prey', 'herbivore'}
 
   local vel = v2(0,0)
   local target_vel
@@ -228,13 +229,13 @@ function make_herbivore(game, _pos)
   end
   
   local function reproduce()
-    game.resources.herbivore_reproduce:play(.25)
+    game.resources.herbivore_reproduce:play(.1)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
   function self.update()
     eat()
-    hunger = hunger + 0.0005
+    hunger = hunger + 0.0003
     
     if hunger <= 0 then
       reproduce()

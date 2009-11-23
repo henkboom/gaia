@@ -146,6 +146,31 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
       end,
     }
+
+    local predator_countdown = 300
+    local herbivore_countdown = 150
+    game.add_actor{
+      preupdate = function ()
+        if #game.get_actors_by_tag('predator') == 0 then
+          predator_countdown = predator_countdown - 1
+          if predator_countdown <= 0 then
+            predator_countdown = 300
+            game.add_actor(creatures.make_predator(
+              game,
+              v2(math.random() * C.width, math.random() * C.height)))
+          end
+        end
+        if #game.get_actors_by_tag('herbivore') == 0 then
+          herbivore_countdown = herbivore_countdown - 1
+          if herbivore_countdown <= 0 then
+            herbivore_countdown = 150
+            game.add_actor(creatures.make_herbivore(
+              game,
+              v2(math.random() * C.width, math.random() * C.height)))
+          end
+        end
+      end
+    }
     
     --- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
@@ -164,7 +189,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     end
   
     --- Load Herbivores ------------------------------------------------------
-    for i = 1, 10 do 
+    for i = 1, 15 do 
       game.add_actor(creatures.make_herbivore(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
