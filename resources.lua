@@ -19,6 +19,9 @@ return {
   
   herbivore_inner_outline = graphics.sprite_from_image('sprites/herbivore_inner_outline.png', nil, 'center'),
   herbivore_inner_fill = graphics.sprite_from_image('sprites/herbivore_inner_fill.png', nil, 'center'),
+  
+  foliage_outline = graphics.sprite_from_image('sprites/foliage_outline.png', nil, 'center'),
+  foliage_fill = graphics.sprite_from_image('sprites/foliage_fill.png', nil, 'center'),
 
   --- Sounds -----------------------------------------------------------------
   
@@ -27,7 +30,7 @@ return {
   predator_attack = try_load_wav("sounds/predator_attack.wav"),
   predator_eat = try_load_wav("sounds/predator_eat.wav"),
   --predator_reproduce = try_load_wav("predator.wav"),
-  --predator_starve = try_load_wav("sounds/predator_starve.wav"),
+  predator_starve = try_load_wav("sounds/predator_starve.wav"),
   
   --herbivore_drone = try_load_wav("sounds/herbivore_drone.wav"),
   herbivore_reproduce = try_load_wav("sounds/herbivore_reproduce.wav"),
