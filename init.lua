@@ -6,6 +6,7 @@ local v2 = require 'dokidoki.v2'
 
 local C = require 'constants'
 local creatures = require 'creatures'
+local sensor = require 'sensor'
 
 import 'gl'
 import 'dokidoki.base'
@@ -15,6 +16,41 @@ function nwipe(t)
   for i = 1, t.n do
     t[i] = nil
   end
+end
+
+function init_sensing(game)
+  print('initializing sensing')
+  local countdown = 0;
+  local activity_level = 0;
+
+  function game.get_activity_level()
+    return activity_level
+  end
+
+  game.add_actor{
+    preupdate = function ()
+      countdown = countdown - 1
+      if countdown <= 0 then
+        countdown = 6
+        local ret, err = sensor.capture()
+        if ret then
+          activity_level = activity_level * 0.8 + ret * 0.2
+          print('sensed ' .. activity_level)
+        else
+          print(err)
+        end
+      end
+    end,
+    draw_debug = function ()
+      local width = activity_level * C.width * 10
+      glBegin(GL_QUADS)
+      glVertex2d(0, 0)
+      glVertex2d(width, 0)
+      glVertex2d(width, 10)
+      glVertex2d(0, 10)
+      glEnd()
+    end
+  }
 end
 
 function init_collision_detection(game, tags)
@@ -83,7 +119,7 @@ function init_tracing(game)
     function self.trace_cleanup()
       self.is_dead = true
     end
-    function self.draw_trace()
+    function self.draw_debug()
       if source then
         glColor4d(1, 1, 1, 1/4)
         glBegin(GL_LINES)
@@ -106,11 +142,12 @@ end
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'trace_cleanup', 'preupdate', 'update'},
   {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
-   'draw_inner_fill', 'draw_trace'},
+   'draw_inner_fill', 'draw_debug'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
 
+    init_sensing(game)
     init_tracing(game)
     init_collision_detection(game, {'prey', 'foliage'})
 
