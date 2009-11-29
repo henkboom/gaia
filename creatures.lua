@@ -65,7 +65,11 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
-      game.resources.predator_eat:play(.08)
+      
+      if math.random(6) == 1 then
+        game.resources.predator_eat:play(.01)
+      end
+      
       hunger = hunger - 0.1
       f.is_dead = true
     end
@@ -84,7 +88,9 @@ function make_predator(game, _pos)
       if fd then
         -- play sound when on the attack
         if attacking == false then
-          game.resources.predator_attack:play(.04)
+          if math.random(5) == 1 then
+            game.resources.predator_attack:play(.05)
+          end
           attacking=true
         end
         speed = math.min(speed + speed_increment, max_speed)
@@ -110,22 +116,23 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.002/60 * length
+    hunger = hunger + 0.002/60 * (2 + length/2)
     eat()
     if hunger >= 1 then
-      game.resources.predator_starve:play(.1)
+      game.resources.predator_starve:play(.2)
       self.is_dead = true
     elseif hunger <= 0 then
       hunger = hunger + 0.5
       lengthen()
     end
+    if tail then tail.set_hunger(hunger) end
     -- Measuring Hunger
     game.trace_circle(self.pos, self.pos, 50)
     game.trace_circle(self.pos, self.pos, (1 - hunger) * 50)
   end
 
   function self.draw_outline()
-    glColor3d(1.0, 0, 0.7)
+    glColor3d(1.0 - hunger, 0.2 * hunger, 0.7 - 0.2 * hunger)    
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -150,6 +157,9 @@ function make_predator_cell(game, _pos, head, length, tail)
   local angle = 0
   local scale = length / 150 + 0.25
   local follow_distance = 40 * scale
+  
+  -- for drawing only
+  local hunger = 0
 
   function self.update()
     if not tail and length > 1 then
@@ -168,7 +178,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   end
 
   function self.draw_outline()
-    glColor3d(1.0, 0, 0.7)
+    glColor3d(1.0 - hunger, 0.2 * hunger, 0.7 - 0.2 * hunger)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -183,6 +193,11 @@ function make_predator_cell(game, _pos, head, length, tail)
 
   function self.set_head(new_head)
     head = new_head
+  end
+  
+  function self.set_hunger(new_hunger)
+    hunger = new_hunger
+    if tail then tail.set_hunger(new_hunger) end
   end
 
   return self
@@ -203,7 +218,6 @@ function make_herbivore(game, _pos)
   local hunger = 0.5
   local desperation = 0
   local inner_rotation = math.random(360)
-  local scale= 0.8
   
   local function eat()
     local eat_radius = 20
@@ -216,15 +230,15 @@ function make_herbivore(game, _pos)
       -- random sound played for eating (1-5)
       local random_num = math.random(5)
       if random_num == 1 then
-        game.resources.herbivore_eat1:play(.02)
+        game.resources.herbivore_eat1:play(.01)
       elseif random_num == 2 then
-        game.resources.herbivore_eat2:play(.02)
+        game.resources.herbivore_eat2:play(.01)
       elseif random_num == 3 then
-        game.resources.herbivore_eat3:play(.02)
+        game.resources.herbivore_eat3:play(.01)
       elseif random_num == 4 then
-        game.resources.herbivore_eat4:play(.02)
+        game.resources.herbivore_eat4:play(.01)
       else
-        game.resources.herbivore_eat5:play(.02)
+        game.resources.herbivore_eat5:play(.01)
       end
 
       hunger =  hunger - 0.28
@@ -294,15 +308,16 @@ function make_herbivore(game, _pos)
   
   function self.draw_outline()
     glColor3d(0, 1, 0.2)
+    --glScaled(math.random()*1.1, math.random()*1.1, 1)
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
     
   end
   
   function self.draw_inner_outline()
-    glColor3d(0, 0.43, 1)
-    glRotated(inner_rotation, 0, 0, 1)
-    glScaled(scale, scale, 1)
+    glColor4d(0, 0.43, 1, 1-hunger)
+    glRotated((self.pos.x + self.pos.y)*5, 0, 0, 1)
+    glScaled(0.8, 0.8, 1)
     game.resources.herbivore_inner_outline:draw()
     glColor3d(1, 1, 1)
   end
@@ -312,8 +327,8 @@ function make_herbivore(game, _pos)
   end
   
   function self.draw_inner_fill()
-    glRotated(inner_rotation, 0, 0, 1)
-    glScaled(scale, scale, 1)
+    glRotated((self.pos.x + self.pos.y)*5, 0, 0, 1)
+    glScaled(0.8, 0.8, 1)
     game.resources.herbivore_inner_fill:draw()
   end
   
@@ -329,7 +344,7 @@ function make_foliage(game, _pos)
   
   
   function self.draw_outline()
-    glColor3d(0.3, 0.2, 0.1)
+    glColor3d(0.15, 0.1, 0.05)
     game.resources.foliage_outline:draw()
     glColor3d(1, 1, 1)
   end
