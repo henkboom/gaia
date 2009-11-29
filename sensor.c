@@ -20,7 +20,7 @@ static double capture()
   
     if(!capture) capture = cvCaptureFromCAM(0);
     if(!cvGrabFrame(capture)) return -1;
-    IplImage* img = cvRetrieveFrame(capture);
+    IplImage* img = cvRetrieveFrame(capture, 0);
     if(!lastFrame) lastFrame =
         cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
     if(!diffFrame) diffFrame =
@@ -28,13 +28,13 @@ static double capture()
   
     // count differences
     int i, j, k;
-    uint differences = 0;
+    unsigned differences = 0;
     for(j = 0; j < img->height; j++)
     for(i = 0; i < img->width; i++)
     for(k = 0; k < img->nChannels; k++)
     {
         int d = ((int)PIXEL(img, i, j, k) - PIXEL(lastFrame, i, j, k));
-        if(-32 < d && d < 32) d = 0;
+        if(-8 < d && d < 8) d = 0;
         differences += abs(d);
         PIXEL(diffFrame, i, j, k) = 128 + d/2;
     }

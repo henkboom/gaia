@@ -19,7 +19,6 @@ function nwipe(t)
 end
 
 function init_sensing(game)
-  print('initializing sensing')
   local countdown = 0;
   local activity_level = 0;
 
@@ -31,7 +30,7 @@ function init_sensing(game)
     preupdate = function ()
       countdown = countdown - 1
       if countdown <= 0 then
-        countdown = 6
+        countdown = 5
         local ret, err = sensor.capture()
         if ret then
           activity_level = activity_level * 0.8 + ret * 0.2
@@ -42,7 +41,7 @@ function init_sensing(game)
       end
     end,
     draw_debug = function ()
-      local width = activity_level * C.width * 10
+      local width = activity_level * C.width * 40
       glBegin(GL_QUADS)
       glVertex2d(0, 0)
       glVertex2d(width, 0)

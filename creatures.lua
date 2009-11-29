@@ -116,7 +116,7 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.002/60 * (2 + length/2)
+    hunger = hunger + 0.002/60 * (2 + length*0.75)
     eat()
     if hunger >= 1 then
       game.resources.predator_starve:play(.2)
