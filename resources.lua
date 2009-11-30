@@ -25,14 +25,11 @@ return {
 
   --- Sounds -----------------------------------------------------------------
   
-  --predator_hunting = try_load_wav("sounds/predator_hunting.wav"),
-  --predator_mating = try_load_wav("predator.wav"),
   predator_attack = try_load_wav("sounds/predator_attack.wav"),
   predator_eat = try_load_wav("sounds/predator_eat.wav"),
-  --predator_reproduce = try_load_wav("predator.wav"),
+  predator_reproduce = try_load_wav("sounds/predator_reproduce.wav"),
   predator_starve = try_load_wav("sounds/predator_starve.wav"),
   
-  --herbivore_drone = try_load_wav("sounds/herbivore_drone.wav"),
   herbivore_reproduce = try_load_wav("sounds/herbivore_reproduce.wav"),
   herbivore_starve = try_load_wav("sounds/herbivore_starve.wav"),
   herbivore_eat1 = try_load_wav("sounds/herbivore_eat1.wav"),

@@ -36,6 +36,7 @@ function make_predator(game, _pos)
     length = length + 1
     if length >= 12 and length % 6 == 0 then
       game.add_actor(make_predator(game, self.pos))
+      game.resources.predator_reproduce:play(.3)
     end
   end
 
@@ -65,11 +66,7 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
-      
-      if math.random(6) == 1 then
-        game.resources.predator_eat:play(.01)
-      end
-      
+      game.resources.predator_eat:play(.03)
       hunger = hunger - 0.1
       f.is_dead = true
     end
@@ -88,9 +85,7 @@ function make_predator(game, _pos)
       if fd then
         -- play sound when on the attack
         if attacking == false then
-          if math.random(5) == 1 then
-            game.resources.predator_attack:play(.05)
-          end
+          game.resources.predator_attack:play(.05)
           attacking=true
         end
         speed = math.min(speed + speed_increment, max_speed)
@@ -308,7 +303,6 @@ function make_herbivore(game, _pos)
   
   function self.draw_outline()
     glColor3d(0, 1, 0.2)
-    --glScaled(math.random()*1.1, math.random()*1.1, 1)
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
     
