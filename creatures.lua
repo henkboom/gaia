@@ -36,7 +36,7 @@ function make_predator(game, _pos)
     length = length + 1
     if length >= 12 and length % 6 == 0 then
       game.add_actor(make_predator(game, self.pos))
-      game.resources.predator_reproduce:play(.3)
+      game.resources.predator_reproduce:play(1.8*C.volume)
     end
   end
 
@@ -66,7 +66,7 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
-      game.resources.predator_eat:play(.03)
+      game.resources.predator_eat:play(.18*C.volume)
       hunger = hunger - 0.1
       f.is_dead = true
     end
@@ -85,7 +85,7 @@ function make_predator(game, _pos)
       if fd then
         -- play sound when on the attack
         if attacking == false then
-          game.resources.predator_attack:play(.05)
+          game.resources.predator_attack:play(.3*C.volume)
           attacking=true
         end
         speed = math.min(speed + speed_increment, max_speed)
@@ -114,7 +114,7 @@ function make_predator(game, _pos)
     hunger = hunger + 0.002/60 * (2 + length*0.75)
     eat()
     if hunger >= 1 then
-      game.resources.predator_starve:play(.2)
+      game.resources.predator_starve:play(1.2*C.volume)
       self.is_dead = true
     elseif hunger <= 0 then
       hunger = hunger + 0.5
@@ -225,15 +225,15 @@ function make_herbivore(game, _pos)
       -- random sound played for eating (1-5)
       local random_num = math.random(5)
       if random_num == 1 then
-        game.resources.herbivore_eat1:play(.01)
+        game.resources.herbivore_eat1:play(.06*C.volume)
       elseif random_num == 2 then
-        game.resources.herbivore_eat2:play(.01)
+        game.resources.herbivore_eat2:play(.06*C.volume)
       elseif random_num == 3 then
-        game.resources.herbivore_eat3:play(.01)
+        game.resources.herbivore_eat3:play(.06*C.volume)
       elseif random_num == 4 then
-        game.resources.herbivore_eat4:play(.01)
+        game.resources.herbivore_eat4:play(.06*C.volume)
       else
-        game.resources.herbivore_eat5:play(.01)
+        game.resources.herbivore_eat5:play(.06*C.volume)
       end
 
       hunger =  hunger - 0.28
@@ -242,7 +242,7 @@ function make_herbivore(game, _pos)
   end
   
   local function reproduce()
-    game.resources.herbivore_reproduce:play(.1)
+    game.resources.herbivore_reproduce:play(.6*C.volume)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
@@ -260,7 +260,7 @@ function make_herbivore(game, _pos)
       reproduce()
       hunger = 0.5
     elseif hunger >= 1 then
-      game.resources.herbivore_starve:play(.06)
+      game.resources.herbivore_starve:play(.36*C.volume)
       self.is_dead = true
     end 
     
