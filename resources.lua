@@ -25,13 +25,23 @@ return {
 
   --- Sounds -----------------------------------------------------------------
   
-  predator_attack = try_load_wav("sounds/predator_attack.wav"),
-  predator_eat = try_load_wav("sounds/predator_eat.wav"),
+  predator_attack1 = try_load_wav("sounds/predator_attack1.wav"),
+  predator_attack2 = try_load_wav("sounds/predator_attack2.wav"),
+  predator_attack3 = try_load_wav("sounds/predator_attack3.wav"),
+  
+  predator_eat1 = try_load_wav("sounds/predator_eat1.wav"),
+  predator_eat2 = try_load_wav("sounds/predator_eat2.wav"),
+  predator_eat3 = try_load_wav("sounds/predator_eat3.wav"),
+  
   predator_reproduce = try_load_wav("sounds/predator_reproduce.wav"),
   predator_starve = try_load_wav("sounds/predator_starve.wav"),
   
   herbivore_reproduce = try_load_wav("sounds/herbivore_reproduce.wav"),
-  herbivore_starve = try_load_wav("sounds/herbivore_starve.wav"),
+  
+  herbivore_starve1 = try_load_wav("sounds/herbivore_starve1.wav"),
+  herbivore_starve2 = try_load_wav("sounds/herbivore_starve2.wav"),
+  herbivore_starve3 = try_load_wav("sounds/herbivore_starve3.wav"),
+  
   herbivore_eat1 = try_load_wav("sounds/herbivore_eat1.wav"),
   herbivore_eat2 = try_load_wav("sounds/herbivore_eat2.wav"),
   herbivore_eat3 = try_load_wav("sounds/herbivore_eat3.wav"),

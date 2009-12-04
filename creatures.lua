@@ -44,8 +44,10 @@ function make_predator(game, _pos)
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 90
     local right_pos = self.pos + v2.unit(angle - math.pi/6) * 90
     local radius = 60
-    local left_count = #game.nearby(left_pos, radius, 'prey')
-    local right_count = #game.nearby(right_pos, radius, 'prey')
+    local left_count = #game.nearby(left_pos, radius, 'prey') +
+                       (game.out_of_world(left_pos, radius) and -0.5 or 0)
+    local right_count = #game.nearby(right_pos, radius, 'prey') +
+                       (game.out_of_world(right_pos, radius) and -0.5 or 0)
 
     game.trace_circle(self.pos, left_pos, radius)
     game.trace_circle(self.pos, right_pos, radius)
@@ -66,7 +68,17 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'prey')
     for _, f in ipairs(food) do
-      game.resources.predator_eat:play(.18*C.volume)
+      
+      -- PREDATOR EAT SOUNDS
+      local random = math.random(3)
+      if random == 1 then
+        game.resources.predator_eat1:play(.18*C.volume)
+      elseif random == 2 then
+        game.resources.predator_eat2:play(.18*C.volume)
+      else
+        game.resources.predator_eat3:play(.18*C.volume)
+      end
+      
       hunger = hunger - 0.1
       f.is_dead = true
     end
@@ -85,7 +97,18 @@ function make_predator(game, _pos)
       if fd then
         -- play sound when on the attack
         if attacking == false then
-          game.resources.predator_attack:play(.3*C.volume)
+          
+          -- PREDATOR ATTACK SOUNDS
+          local random = math.random(3)
+          if random == 1 then
+           game.resources.predator_attack1:play(.3*C.volume)
+          elseif random == 2 then
+            game.resources.predator_attack2:play(.3*C.volume)
+          else
+           game.resources.predator_attack3:play(.3*C.volume)
+          end
+          
+          
           attacking=true
         end
         speed = math.min(speed + speed_increment, max_speed)
@@ -221,16 +244,15 @@ function make_herbivore(game, _pos)
     
     for _, f in ipairs(food) do
       
-
-      -- random sound played for eating (1-5)
-      local random_num = math.random(5)
-      if random_num == 1 then
+      -- HERBIVORE EAT SOUNDS
+      local random = math.random(5)
+      if random == 1 then
         game.resources.herbivore_eat1:play(.06*C.volume)
-      elseif random_num == 2 then
+      elseif random == 2 then
         game.resources.herbivore_eat2:play(.06*C.volume)
-      elseif random_num == 3 then
+      elseif random == 3 then
         game.resources.herbivore_eat3:play(.06*C.volume)
-      elseif random_num == 4 then
+      elseif random == 4 then
         game.resources.herbivore_eat4:play(.06*C.volume)
       else
         game.resources.herbivore_eat5:play(.06*C.volume)
@@ -260,7 +282,16 @@ function make_herbivore(game, _pos)
       reproduce()
       hunger = 0.5
     elseif hunger >= 1 then
-      game.resources.herbivore_starve:play(.36*C.volume)
+      
+      -- HERBIVORE STARVE SOUNDS
+      local random = math.random(3)
+      if random == 1 then
+        game.resources.herbivore_starve1:play(.36*C.volume)
+      elseif random == 2 then
+        game.resources.herbivore_starve2:play(.36*C.volume)
+      else
+        game.resources.herbivore_starve3:play(.36*C.volume)
+      end
       self.is_dead = true
     end 
     

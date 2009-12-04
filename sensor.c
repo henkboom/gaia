@@ -34,7 +34,7 @@ static double capture()
     for(k = 0; k < img->nChannels; k++)
     {
         int d = ((int)PIXEL(img, i, j, k) - PIXEL(lastFrame, i, j, k));
-        if(-8 < d && d < 8) d = 0;
+        if(-22 < d && d < 22) d = 0;
         differences += abs(d);
         PIXEL(diffFrame, i, j, k) = 128 + d/2;
     }

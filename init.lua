@@ -11,6 +11,7 @@ local sensor = require 'sensor'
 import 'gl'
 import 'dokidoki.base'
 kernel.set_video_mode(1024,768)
+kernel.set_ratio(C.width/C.height)
 
 function nwipe(t)
   for i = 1, t.n do
@@ -30,10 +31,11 @@ function init_sensing(game)
     preupdate = function ()
       countdown = countdown - 1
       if countdown <= 0 then
-        countdown = 5
+        countdown = 6
         local ret, err = sensor.capture()
         if ret then
-          activity_level = activity_level * 0.8 + ret * 0.2
+          local measurement = math.max(0, math.min(1, (ret - 0.001)*20))
+          activity_level = activity_level * 0.8 + measurement * 0.2
           print('sensed ' .. activity_level)
         else
           print(err)
@@ -41,7 +43,7 @@ function init_sensing(game)
       end
     end,
     draw_debug = function ()
-      local width = activity_level * C.width * 40
+      local width = activity_level * C.width
       glBegin(GL_QUADS)
       glVertex2d(0, 0)
       glVertex2d(width, 0)
@@ -156,6 +158,13 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         pos.y < C.lower_bound and 1 or pos.y > C.upper_bound and -1 or 0)
     end
 
+    function game.out_of_world(pos, distance)
+      return pos.x - distance < C.left_bound or
+             pos.x + distance > C.right_bound or
+             pos.y - distance < C.lower_bound or
+             pos.y + distance > C.upper_bound
+    end
+
     game.add_actor{
       draw_setup = function ()
         glClearColor(0.0, 0.0, 0.0, 0)
@@ -211,7 +220,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     --- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
-        if math.random(100) < 10 then
+        if math.random(100) < 15 then
           game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height)))
         end
       end
