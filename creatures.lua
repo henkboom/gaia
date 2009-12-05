@@ -396,6 +396,7 @@ function make_scavenger(game, initial_pos)
   self.tags = {'scavenger'}
   
   local opacity = 0
+  local speed = 0.25
 
   local angle = math.random() * 2 * math.pi
   local drawn_angle = angle
@@ -429,7 +430,7 @@ function make_scavenger(game, initial_pos)
     angle = math.atan2(target_direction.y, target_direction.x)
     drawn_angle = angle
     if target_carrion then
-      opacity = math.min(1, opacity + 1/60)
+      opacity = math.min(1, opacity + 1/120)
       if target_carrion.is_dead then
         find_target()
         if not target_carrion then
@@ -438,15 +439,18 @@ function make_scavenger(game, initial_pos)
       else
         game.trace_circle(self.pos, target_carrion.pos, 5)
         if v2.sqrmag(self.pos - target_carrion.pos) < 15*15 then
+          speed = 0.25
           target_carrion.get_nibbled()
           drawn_angle = angle + (math.random() - 0.5) * math.pi/4
         else
-          self.pos = self.pos + target_direction
+          speed = math.min(1.25, speed + 1/90)
+          self.pos = self.pos + target_direction * speed
         end
       end
     else
-      opacity = math.max(0, opacity - 1/60)
-      if v2.sqrmag(self.pos - initial_pos) < 2 then
+      opacity = math.max(0, opacity - 1/120)
+      if v2.sqrmag(self.pos - initial_pos) < 9 then
+        speed = 0.25
         idle_countdown = idle_countdown or math.random(120, 180)
         idle_countdown = idle_countdown - 1
         if idle_countdown <= 0 then
@@ -454,7 +458,8 @@ function make_scavenger(game, initial_pos)
           find_target()
         end
       else
-        self.pos = self.pos + target_direction
+        speed = math.min(1.25, speed + 1/90)
+        self.pos = self.pos + target_direction * opacity
       end
     end
   end
