@@ -32,7 +32,7 @@ function init_sensing(game)
       countdown = countdown - 1
       if countdown <= 0 then
         countdown = 6
-        local ret, err = sensor.capture()
+        local ret, err = sensor.read_activity_level()
         if ret then
           local measurement = math.max(0, math.min(1, (ret - 0.001)*20))
           activity_level = activity_level * 0.8 + measurement * 0.2
