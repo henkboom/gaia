@@ -57,7 +57,6 @@ function init_sensing(game)
         tex = sensor.get_texture(true)
       end
       if tex then
-        local tex = sensor.get_texture()
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, tex)
         glBegin(GL_QUADS)
