@@ -71,8 +71,8 @@ static unsigned get_texture()
         glGenTextures(1, &tex);
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, img->nChannels, img->width, img->height, 0,
-                 img->nChannels, GL_UNSIGNED_BYTE, img->imageData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img->width, img->height, 0,
+                 GL_RGB, GL_UNSIGNED_BYTE, img->imageData);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
