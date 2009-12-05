@@ -72,7 +72,7 @@ static unsigned get_texture(int get_diff)
         glGenTextures(1, &tex);
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, img->width, img->height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img->width, img->height, 0,
                  GL_BGR, GL_UNSIGNED_BYTE, img->imageData);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
