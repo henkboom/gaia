@@ -48,7 +48,7 @@ static double capture()
         int d = ((int)PIXEL(img, i, j, k) - PIXEL(lastFrame, i, j, k));
         if(-22 < d && d < 22) d = 0;
         differences += abs(d);
-        PIXEL(diffFrame, i, j, k) = 128 + d/2;
+        PIXEL(diffFrame, i, j, k) = abs(d);
     }
     int area = img->width * img->height * img->nChannels;
   
