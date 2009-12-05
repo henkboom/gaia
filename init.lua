@@ -150,7 +150,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
 
     init_sensing(game)
     init_tracing(game)
-    init_collision_detection(game, {'prey', 'foliage'})
+    init_collision_detection(game, {'prey', 'foliage', 'carrion'})
 
     function game.get_bounds_correction(pos)
       return v2(
@@ -217,6 +217,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end
     }
     
+    --[[
     --- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
@@ -225,14 +226,24 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         end
       end
     }
+    ]]
+    
+    --- Load Scavengers ------------------------------------------------------
+    
+    for w =1, C.scavenger_width do
+      for h=1, C.scavenger_height do
+        game.add_actor(creatures.make_scavenger(game,v2(w*100, h*100)))
+      end
+    end
       
     --- Load Predators -------------------------------------------------------
+    --[[
     for i = 1, 3 do
       game.add_actor(creatures.make_predator(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
-  
+    
     --- Load Herbivores ------------------------------------------------------
     for i = 1, 18 do 
       game.add_actor(creatures.make_herbivore(
@@ -246,6 +257,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       game,
       v2(math.random() * C.width, math.random() * C.height)))  
     end
+    ]]
     
     end))
 

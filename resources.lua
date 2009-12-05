@@ -20,6 +20,8 @@ return {
   herbivore_inner_outline = graphics.sprite_from_image('sprites/herbivore_inner_outline.png', nil, 'center'),
   herbivore_inner_fill = graphics.sprite_from_image('sprites/herbivore_inner_fill.png', nil, 'center'),
   
+  scavenger_outline = graphics.sprite_from_image('sprites/scavenger_outline.png', nil, 'center'),
+  
   foliage_outline = graphics.sprite_from_image('sprites/foliage_outline.png', nil, 'center'),
   foliage_fill = graphics.sprite_from_image('sprites/foliage_fill.png', nil, 'center'),
 

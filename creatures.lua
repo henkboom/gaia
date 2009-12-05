@@ -1,5 +1,5 @@
 require 'dokidoki.module'
-[[ make_predator, make_herbivore, make_foliage ]]
+[[ make_predator, make_herbivore, make_scavenger, make_foliage, make_carrion ]]
 
 local v2 = require 'dokidoki.v2'
 local C = require 'constants'
@@ -84,6 +84,15 @@ function make_predator(game, _pos)
     end
   end
 
+  function self.starve()
+    --make carrion
+    game.add_actor(make_carrion(game, self.pos))
+   
+    -- PREDATOR STARVE SOUNDS
+    game.resources.predator_starve:play(1.2*C.volume)
+    self.is_dead = true
+  end
+
   function self.update()
     if not tail then
       tail = make_predator_cell(game, self.pos, self, length-1)
@@ -137,8 +146,7 @@ function make_predator(game, _pos)
     hunger = hunger + 0.002/60 * (2 + length*0.75)
     eat()
     if hunger >= 1 then
-      game.resources.predator_starve:play(1.2*C.volume)
-      self.is_dead = true
+      self.starve()
     elseif hunger <= 0 then
       hunger = hunger + 0.5
       lengthen()
@@ -179,6 +187,13 @@ function make_predator_cell(game, _pos, head, length, tail)
   -- for drawing only
   local hunger = 0
 
+  function self.starve()
+    --make carrion
+    game.add_actor(make_carrion(game, self.pos))
+    
+    self.is_dead = true
+  end
+
   function self.update()
     if not tail and length > 1 then
       tail = make_predator_cell(game, self.pos, self, length-1)
@@ -186,7 +201,7 @@ function make_predator_cell(game, _pos, head, length, tail)
     end
 
     if head.is_dead then
-      self.is_dead = true
+      self.starve()
     else
       if v2.mag(self.pos - head.pos) > follow_distance then
         self.pos = head.pos + v2.norm(self.pos - head.pos) * follow_distance
@@ -239,7 +254,6 @@ function make_herbivore(game, _pos)
   
   local function eat()
     local eat_radius = 20
-    --game.trace_circle(self.pos, self.pos, eat_radius)
     local food = game.nearby(self.pos, eat_radius, 'foliage')
     
     for _, f in ipairs(food) do
@@ -268,6 +282,24 @@ function make_herbivore(game, _pos)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
+  function self.starve()
+    --make carrion
+    game.add_actor(make_carrion(game, self.pos))
+   
+    -- HERBIVORE STARVE SOUNDS
+    local random = math.random(3)
+    if random == 1 then
+      game.resources.herbivore_starve1:play(.36*C.volume)
+    elseif random == 2 then
+      game.resources.herbivore_starve2:play(.36*C.volume)
+    else
+      game.resources.herbivore_starve3:play(.36*C.volume)
+    end
+    
+    self.is_dead = true
+  end
+  
+  
   function self.update()
     eat()
     hunger = hunger + 0.0003
@@ -282,17 +314,7 @@ function make_herbivore(game, _pos)
       reproduce()
       hunger = 0.5
     elseif hunger >= 1 then
-      
-      -- HERBIVORE STARVE SOUNDS
-      local random = math.random(3)
-      if random == 1 then
-        game.resources.herbivore_starve1:play(.36*C.volume)
-      elseif random == 2 then
-        game.resources.herbivore_starve2:play(.36*C.volume)
-      else
-        game.resources.herbivore_starve3:play(.36*C.volume)
-      end
-      self.is_dead = true
+      self.starve()
     end 
     
     -- Measuring Hunger
@@ -360,14 +382,64 @@ function make_herbivore(game, _pos)
   return self
 end
 
+--- Scavenger -----------------------------------------------------------------
+
+function make_scavenger(game, _pos)
+  local self = {}
+  self.pos = _pos
+  self.tags = {'scavenger'}
+  
+  --speed and angle
+  local min_speed = 0.7
+  local max_speed = 3
+  local speed = min_speed
+  local speed_increment = 0.05
+  local angle = math.random() * 2 * math.pi
+  
+  -- FOOD DETECTION AND EATING NEEDS TO BE ADDED BY A PRO
+  --[[
+  local function food_detection()
+    local eat_radius = 100
+    local food = game.nearby(self.pos, eat_radius, 'carrion')
+    
+    game.trace_circle(self.pos, self.pos, eat_radius)
+    
+    for _, f in ipairs(food) do
+      f.is_dead = true
+    end
+    
+  end
+  
+  function self.update()
+      -- handle seeing food
+      local fd = food_detection()
+      
+      if fd then
+        speed = math.min(speed + speed_increment, max_speed)
+        angle = fd
+      else
+        speed = math.max(speed - speed_increment, min_speed)
+      end
+  
+  end]]
+  
+  function self.draw_outline()
+    glColor3d(1, 0.77, 0)
+    game.resources.scavenger_outline:draw()
+    glColor3d(1, 1, 1)
+  end
+  
+  return self
+  
+end
+
 --- Foliage -----------------------------------------------------------------
 
 function make_foliage(game, _pos)
   local self = {}
   self.pos = _pos
   self.tags = {'foliage'}
-  
-  
+
   function self.draw_outline()
     glColor3d(0.15, 0.1, 0.05)
     game.resources.foliage_outline:draw()
@@ -378,6 +450,26 @@ function make_foliage(game, _pos)
     game.resources.foliage_fill:draw()
   end
 
+  return self
+end
+
+--- Carrion -----------------------------------------------------------------
+
+function make_carrion(game, _pos)
+  local self = {}
+  self.pos = _pos
+  self.tags = {'carrion'}
+  
+  function self.draw_outline()
+    glColor3d(1, 0.1, 0.05)
+    game.resources.foliage_outline:draw()
+    glColor3d(1, 1, 1)
+  end
+  
+  function self.draw_fill()
+    game.resources.foliage_fill:draw()
+  end
+  
   return self
 end
 
