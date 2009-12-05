@@ -50,7 +50,13 @@ function init_sensing(game)
       glVertex2d(width, 10)
       glVertex2d(0, 10)
       glEnd()
+      local tex = nil
       if game.is_key_down(string.byte("1")) then
+        tex = sensor.get_texture(false)
+      elseif game.is_key_down(string.byte("2")) then
+        tex = sensor.get_texture(true)
+      end
+      if tex then
         local tex = sensor.get_texture()
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, tex)

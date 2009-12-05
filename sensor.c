@@ -58,10 +58,11 @@ static double capture()
     return (double)differences/(area*255);
 }
 
-static unsigned get_texture()
+static unsigned get_texture(int get_diff)
 {
     static unsigned tex = 0;
     IplImage * img = lastFrame;
+    if(get_diff) img = diffFrame;
 
     if(img == NULL) return 0;
     if(changed == 0) return tex;
@@ -71,8 +72,8 @@ static unsigned get_texture()
         glGenTextures(1, &tex);
 
     glBindTexture(GL_TEXTURE_2D, tex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img->width, img->height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, img->imageData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGR, img->width, img->height, 0,
+                 GL_BGR, GL_UNSIGNED_BYTE, img->imageData);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -101,7 +102,7 @@ static int sensor__capture(lua_State *L)
 
 static int sensor__get_texture(lua_State *L)
 {
-    lua_pushnumber(L, get_texture());
+    lua_pushnumber(L, get_texture(lua_toboolean(L, 1)));
     return 1;
 }
 
