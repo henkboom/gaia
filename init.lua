@@ -237,7 +237,6 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     end
       
     --- Load Predators -------------------------------------------------------
-    --[[
     for i = 1, 3 do
       game.add_actor(creatures.make_predator(
         game,
@@ -257,7 +256,6 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       game,
       v2(math.random() * C.width, math.random() * C.height)))  
     end
-    ]]
     
     end))
 

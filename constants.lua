@@ -1,9 +1,5 @@
 local C = {}
 
---C.width = 768
---C.height= 1024
---C.width = 1024
---C.height = 768
 C.width = 1200
 C.height = 900
 

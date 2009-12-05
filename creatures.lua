@@ -86,7 +86,8 @@ function make_predator(game, _pos)
 
   function self.starve()
     --make carrion
-    game.add_actor(make_carrion(game, self.pos))
+    game.add_actor(make_carrion(game, self.pos, angle, scale,
+      game.resources.predator_outline, game.resources.predator_fill))
    
     -- PREDATOR STARVE SOUNDS
     game.resources.predator_starve:play(1.2*C.volume)
@@ -189,7 +190,8 @@ function make_predator_cell(game, _pos, head, length, tail)
 
   function self.starve()
     --make carrion
-    game.add_actor(make_carrion(game, self.pos))
+    game.add_actor(make_carrion(game, self.pos, angle, scale,
+      game.resources.predator_outline, game.resources.predator_fill))
     
     self.is_dead = true
   end
@@ -284,7 +286,9 @@ function make_herbivore(game, _pos)
   
   function self.starve()
     --make carrion
-    game.add_actor(make_carrion(game, self.pos))
+    local r = game.resources
+    game.add_actor(make_carrion(game, self.pos, 0, 1,
+      r.herbivore_outline, r.herbivore_fill))
    
     -- HERBIVORE STARVE SOUNDS
     local random = math.random(3)
@@ -354,17 +358,20 @@ function make_herbivore(game, _pos)
     vel = vel * 0.98 + target_vel * 0.02
   end
   
+  local function get_angle()
+    return (self.pos.x + self.pos.y)*5
+  end
+
   function self.draw_outline()
     glColor3d(0, 1, 0.2)
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
     
   end
-  
+
   function self.draw_inner_outline()
     glColor4d(0, 0.43, 1, 1-hunger)
-    glRotated((self.pos.x + self.pos.y)*5, 0, 0, 1)
-    glScaled(0.8, 0.8, 1)
+    glRotated(get_angle(), 0, 0, 1)
     game.resources.herbivore_inner_outline:draw()
     glColor3d(1, 1, 1)
   end
@@ -374,8 +381,7 @@ function make_herbivore(game, _pos)
   end
   
   function self.draw_inner_fill()
-    glRotated((self.pos.x + self.pos.y)*5, 0, 0, 1)
-    glScaled(0.8, 0.8, 1)
+    glRotated(get_angle(), 0, 0, 1)
     game.resources.herbivore_inner_fill:draw()
   end
   
@@ -455,19 +461,29 @@ end
 
 --- Carrion -----------------------------------------------------------------
 
-function make_carrion(game, _pos)
+function make_carrion(game, _pos, angle, scale, outline, fill)
   local self = {}
   self.pos = _pos
   self.tags = {'carrion'}
   
-  function self.draw_outline()
-    glColor3d(1, 0.1, 0.05)
-    game.resources.foliage_outline:draw()
+  local function generic_draw(sprite)
+    glColor3d(0.4, 0.3, 0.15)
+    glScaled(scale, scale, scale)
+    glRotated(angle * 180/math.pi, 0, 0, 1)
+    sprite:draw()
     glColor3d(1, 1, 1)
   end
-  
-  function self.draw_fill()
-    game.resources.foliage_fill:draw()
+
+  if outline then
+    function self.draw_outline()
+      generic_draw(outline)
+    end
+  end
+
+  if fill then
+    function self.draw_fill()
+      generic_draw(fill)
+    end
   end
   
   return self
