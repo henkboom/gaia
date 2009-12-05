@@ -52,6 +52,7 @@ function init_sensing(game)
       glEnd()
       if game.is_key_down(string.byte("1")) then
         local tex = sensor.get_texture()
+        glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, tex)
         glBegin(GL_QUADS)
         glTexCoord2d(0, 1)
@@ -64,6 +65,7 @@ function init_sensing(game)
         glVertex2d(0, C.height)
         glEnd()
         glBindTexture(GL_TEXTURE_2D, 0)
+        glDisable(GL_TEXTURE_2D)
       end
     end
   }
