@@ -390,49 +390,93 @@ end
 
 --- Scavenger -----------------------------------------------------------------
 
-function make_scavenger(game, _pos)
+function make_scavenger(game, initial_pos)
   local self = {}
-  self.pos = _pos
+  self.pos = initial_pos
   self.tags = {'scavenger'}
   
-  --speed and angle
-  local min_speed = 0.7
-  local max_speed = 3
-  local speed = min_speed
-  local speed_increment = 0.05
+  local opacity = 0
+
   local angle = math.random() * 2 * math.pi
+  local drawn_angle = angle
+  local idle_countdown = 0
+
+  local target_carrion = nil
+  local target_direction = v2(1, 0)
   
-  -- FOOD DETECTION AND EATING NEEDS TO BE ADDED BY A PRO
-  --[[
-  local function food_detection()
-    local eat_radius = 100
+  local function find_target()
+    local eat_radius = 50 + math.random(6)^3
     local food = game.nearby(self.pos, eat_radius, 'carrion')
-    
+
     game.trace_circle(self.pos, self.pos, eat_radius)
-    
-    for _, f in ipairs(food) do
-      f.is_dead = true
+
+    target_carrion = food[1]
+    if target_carrion then
+      local min_distance = v2.sqrmag(target_carrion.pos - self.pos)
+      for _, f in ipairs(food) do
+        if v2.sqrmag(f.pos - self.pos) < min_distance then
+          target_carrion = f
+        end
+      end
     end
-    
+
+    if target_carrion then
+      target_direction = v2.norm(target_carrion.pos - self.pos)
+    end
   end
   
   function self.update()
-      -- handle seeing food
-      local fd = food_detection()
-      
-      if fd then
-        speed = math.min(speed + speed_increment, max_speed)
-        angle = fd
+    angle = math.atan2(target_direction.y, target_direction.x)
+    drawn_angle = angle
+    if target_carrion then
+      opacity = math.min(1, opacity + 1/60)
+      if target_carrion.is_dead then
+        find_target()
+        if not target_carrion then
+          target_direction = v2.norm(initial_pos - self.pos)
+        end
       else
-        speed = math.max(speed - speed_increment, min_speed)
+        game.trace_circle(self.pos, target_carrion.pos, 5)
+        if v2.sqrmag(self.pos - target_carrion.pos) < 15*15 then
+          target_carrion.get_nibbled()
+          drawn_angle = angle + (math.random() - 0.5) * math.pi/4
+        else
+          self.pos = self.pos + target_direction
+        end
       end
-  
-  end]]
+    else
+      opacity = math.max(0, opacity - 1/60)
+      if v2.sqrmag(self.pos - initial_pos) < 2 then
+        idle_countdown = idle_countdown or math.random(120, 180)
+        idle_countdown = idle_countdown - 1
+        if idle_countdown <= 0 then
+          idle_countdown = nil
+          find_target()
+        end
+      else
+        self.pos = self.pos + target_direction
+      end
+    end
+  end
   
   function self.draw_outline()
-    glColor3d(1, 0.77, 0)
-    game.resources.scavenger_outline:draw()
-    glColor3d(1, 1, 1)
+    if opacity > 0 then
+
+      glBegin(GL_LINES)
+      glColor4d(1, 0.77, 0, opacity/4)
+      glVertex2d(0, 0)
+      glColor4d(1, 0.77, 0, 0)
+      glVertex2d(initial_pos.x - self.pos.x, initial_pos.y - self.pos.y)
+      glEnd()
+
+      glColor4d(1, 0.77, 0, opacity)
+
+      glScaled(0.5, 0.5, 0.5)
+      glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
+      game.resources.scavenger_outline:draw()
+
+      glColor3d(1, 1, 1)
+    end
   end
   
   return self
@@ -465,9 +509,16 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
   local self = {}
   self.pos = _pos
   self.tags = {'carrion'}
-  
+
+  local health = 1
+
+  function self.get_nibbled()
+    health = health - 0.001
+    if health <= 0 then self.is_dead = true end
+  end
+
   local function generic_draw(sprite)
-    glColor3d(0.4, 0.3, 0.15)
+    glColor4d(0.4, 0.3, 0.15, health)
     glScaled(scale, scale, scale)
     glRotated(angle * 180/math.pi, 0, 0, 1)
     sprite:draw()

@@ -3,8 +3,7 @@ local C = {}
 C.width = 1200
 C.height = 900
 
-C.scavenger_width = C.width/100
-C.scavenger_height = C.height/100
+C.scavenger_cell_size = 75
 
 local buffer = 20
 C.left_bound = -buffer
