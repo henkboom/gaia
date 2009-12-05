@@ -4,6 +4,14 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#ifdef __APPLE__
+#include "OpenGL/gl.h"
+#include "OpenGL/glu.h"
+#else
+#include "GL/gl.h"
+#include "GL/glu.h"
+#endif
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -12,19 +20,23 @@
 
 #define PIXEL(img, x, y, k) (((uchar*)(img)->imageData)[(y)*(img)->widthStep+(x)*(img)->nChannels+(k)])
 
+static CvCapture *captureCam = NULL;
+static IplImage *lastFrame = NULL;
+static IplImage *diffFrame = NULL;
+
+static int changed = 0;
+
 static double capture()
 {
-    static CvCapture *capture = NULL;
-    static IplImage *lastFrame = NULL;
-    static IplImage *diffFrame = NULL;
-  
-    if(!capture) capture = cvCaptureFromCAM(0);
-    if(!cvGrabFrame(capture)) return -1;
-    IplImage* img = cvRetrieveFrame(capture, 0);
+    if(!captureCam) captureCam = cvCaptureFromCAM(0);
+    if(!cvGrabFrame(captureCam)) return -1;
+    IplImage* img = cvRetrieveFrame(captureCam, 0);
     if(!lastFrame) lastFrame =
         cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
     if(!diffFrame) diffFrame =
         cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
+
+    changed = 1;
   
     // count differences
     int i, j, k;
@@ -42,7 +54,31 @@ static double capture()
   
     if(lastFrame) cvReleaseImage(&lastFrame);
     lastFrame = cvCloneImage(img);
+
     return (double)differences/(area*255);
+}
+
+static unsigned get_texture()
+{
+    static unsigned tex = 0;
+    IplImage * img = lastFrame;
+
+    if(img == NULL) return 0;
+    if(changed == 0) return tex;
+    changed = 0;
+
+    if(tex == 0)
+        glGenTextures(1, &tex);
+
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, img->nChannels, img->width, img->height, 0,
+                 img->nChannels, GL_UNSIGNED_BYTE, img->imageData);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return tex;
 }
 
 //// Lua Bindings /////////////////////////////////////////////////////////////
@@ -63,9 +99,16 @@ static int sensor__capture(lua_State *L)
     }
 }
 
+static int sensor__get_texture(lua_State *L)
+{
+    lua_pushnumber(L, get_texture());
+    return 1;
+}
+
 static const luaL_Reg sensor_lib[] =
 {
     {"capture", sensor__capture},
+    {"get_texture", sensor__get_texture},
     {NULL, NULL}
 };
 
