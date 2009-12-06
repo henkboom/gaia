@@ -256,7 +256,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     --- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
-        if math.random(100) < 15   then
+        if math.random(100) < 12   then
           game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height)))
         end
       end

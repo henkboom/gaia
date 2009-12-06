@@ -105,6 +105,8 @@ function make_predator(game, _pos)
       tail = make_predator_cell(game, self.pos, self, length-1)
       game.add_actor(tail)
     end
+    
+    scale = length / 60 + 0.5
 
     local bounds_correction = game.get_bounds_correction(self.pos)
     if bounds_correction == v2.zero then
@@ -311,7 +313,7 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0003
+    hunger = hunger + 0.0004
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0
@@ -498,9 +500,9 @@ function make_scavenger(game, initial_pos)
       glVertex2d(initial_pos.x - self.pos.x, initial_pos.y - self.pos.y)
       glEnd()
 
-      glColor4d(1, 0.77, 0, opacity)
+      glColor4d(1,1,1,opacity)
 
-      glScaled(0.5, 0.5, 0.5)
+      glScaled(0.55, 0.55, 0.55)
       glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
       game.resources.scavenger_outline:draw()
 
@@ -540,7 +542,7 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
   function self.get_nibbled()
     health = health - 0.001
     
-    local random = math.random(1000)
+    local random = math.random(500)
     if random == 1 then
       game.resources.scavenger_nibble1:play(C.volume)
     elseif random == 2 then
@@ -560,7 +562,7 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
   end
 
   local function generic_draw(sprite)
-    glColor4d(0.6, 0.45, 0.225, health)
+    glColor4d(0.72, 0.54, 0.27, health)
     glScaled(scale, scale, scale)
     glRotated(angle * 180/math.pi, 0, 0, 1)
     sprite:draw()
