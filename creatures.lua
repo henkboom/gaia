@@ -93,7 +93,7 @@ function make_predator(game, _pos)
   function self.starve()
     --make carrion
     game.add_actor(make_carrion(game, self.pos, angle, scale,
-      game.resources.predator_outline, game.resources.predator_fill))
+      game.resources.predator_outline, game.resources.predator_head_fill))
    
     -- PREDATOR STARVE SOUNDS
     game.resources.predator_starve:play(1.2*C.volume)
@@ -174,7 +174,7 @@ function make_predator(game, _pos)
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
-    game.resources.predator_fill:draw()
+    game.resources.predator_head_fill:draw()
   end
 
   return self
@@ -197,7 +197,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   function self.starve()
     --make carrion
     game.add_actor(make_carrion(game, self.pos, angle, scale,
-      game.resources.predator_outline, game.resources.predator_fill))
+      game.resources.predator_outline, game.resources.predator_cell_fill))
     
     self.is_dead = true
   end
@@ -229,7 +229,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   function self.draw_fill()
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
-    game.resources.predator_fill:draw()
+    game.resources.predator_cell_fill:draw()
   end
 
   function self.set_head(new_head)
@@ -295,7 +295,7 @@ function make_herbivore(game, _pos)
     local r = game.resources
     game.add_actor(make_carrion(game, self.pos, 0, 1,
       r.herbivore_outline, r.herbivore_fill))
-   
+
     -- HERBIVORE STARVE SOUNDS
     local random = math.random(3)
     if random == 1 then
@@ -305,7 +305,6 @@ function make_herbivore(game, _pos)
     else
       game.resources.herbivore_starve3:play(.36*C.volume)
     end
-    
     self.is_dead = true
   end
   
@@ -372,11 +371,10 @@ function make_herbivore(game, _pos)
     glColor3d(0, 1, 0.2)
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
-    
   end
 
   function self.draw_inner_outline()
-    glColor4d(0, 0.43, 1, 1-hunger)
+    glColor4d(0, 0.43, 1, 1-(hunger^2))
     glRotated(get_angle(), 0, 0, 1)
     game.resources.herbivore_inner_outline:draw()
     glColor3d(1, 1, 1)
@@ -414,6 +412,20 @@ function make_scavenger(game, initial_pos)
   local target_carrion = nil
   local target_direction = v2(1, 0)
   
+  local max_countdown = 20
+  local countdown = max_countdown
+  
+  local function spawn_foliage()
+    if countdown >0 then
+      countdown = countdown - 1
+    else
+      game.add_actor(make_foliage(game,self.pos))
+      countdown = max_countdown
+    end
+  end
+    
+  
+  
   local function find_target()
     local eat_radius = 50 + math.random(6)^3
     local food = game.nearby(self.pos, eat_radius, 'carrion')
@@ -429,6 +441,10 @@ function make_scavenger(game, initial_pos)
   end
   
   function self.update()
+    --spawn_foliage()
+
+    if speed > 0 then game.trace_circle(self.pos, self.pos, speed * 10) end
+
     angle = math.atan2(target_direction.y, target_direction.x)
     drawn_angle = angle
     if target_carrion then
