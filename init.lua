@@ -131,6 +131,51 @@ function init_collision_detection(game, tags)
   end
 end
 
+function init_interaction(game)
+  local radius = 300
+
+  local interaction_set = {}
+  
+  local function interact_with(actors)
+    for a in pairs(interaction_set) do
+      a.set_interaction_level(0)
+      interaction_set[a] = nil
+    end
+    for _, a in ipairs(actors) do
+      interaction_set[a] = true
+    end
+  end
+
+  local function update_interaction_level ()
+    for a in pairs(interaction_set) do
+      a.set_interaction_level(0.001 + game.get_activity_level())
+      game.trace_circle(a.pos, a.pos, 20)
+    end
+  end
+
+  local wait = coroutine.yield
+
+  local manage_narrative = coroutine.wrap(function ()
+    print(1)
+    while true do
+      local position = v2(
+        math.random(C.left_bound + radius, C.right_bound - radius),
+        math.random(C.lower_bound + radius, C.upper_bound - radius))
+      interact_with(game.nearby(position, 100, 'interactive'))
+      for i = 1, 180 do
+        wait()
+      end
+    end
+  end)
+
+  game.add_actor{
+    preupdate = function ()
+      manage_narrative()
+      update_interaction_level()
+    end
+  }
+end
+
 function init_tracing(game)
   local circle =
     imap(function (a) return v2.unit(a*math.pi/6) end, range(0, 11))
@@ -171,8 +216,10 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     game.resources = require 'resources'
 
     init_sensing(game)
+    init_collision_detection(game,
+      {'prey', 'foliage', 'carrion', 'interactive'})
+    init_interaction(game)
     init_tracing(game)
-    init_collision_detection(game, {'prey', 'foliage', 'carrion'})
 
     function game.get_bounds_correction(pos)
       return v2(
