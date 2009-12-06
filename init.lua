@@ -253,14 +253,14 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end
     }
     
-    --- Generate Foliage Over Time -------------------------------------------
+    --[[----- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
         if math.random(100) < 12   then
           game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height)))
         end
       end
-    }
+    }]]
     
     --- Load Scavengers ------------------------------------------------------
     for x = 0, C.width, C.scavenger_cell_size do
@@ -282,13 +282,13 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
-    
-    --- Load Foliage -------------------------------------------------------
+    --[[
+    ----- Load Foliage -------------------------------------------------------
     for i = 1, 70 do 
       game.add_actor(creatures.make_foliage(
       game,
       v2(math.random() * C.width, math.random() * C.height)))
     end
-    
+    ]]
     end))
 

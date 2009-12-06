@@ -24,7 +24,7 @@ function make_predator(game, _pos)
   local tail = nil
   local speed = min_speed
   local length = math.random(4, 10)
-  local scale = length / 60 + 0.5
+  local scale = length / 75 + 0.5
   local hunger = 0.5
   local attacking =false
 
@@ -106,7 +106,7 @@ function make_predator(game, _pos)
       game.add_actor(tail)
     end
     
-    scale = length / 60 + 0.5
+    scale = length / 75 + 0.5
 
     local bounds_correction = game.get_bounds_correction(self.pos)
     if bounds_correction == v2.zero then
@@ -410,20 +410,19 @@ function make_scavenger(game, initial_pos)
   local angle = math.random() * 2 * math.pi
   local drawn_angle = angle
   local idle_countdown = 0
-  local attacking = false
-  local leaving = false
 
   local target_carrion = nil
   local target_direction = v2(1, 0)
   
-  local foliage_max_countdown = 1500 + math.random(1000)
-  local foliage_countdown = math.random(2000)
+  local energy = 0
+  local foliage_max_countdown = 1500 + math.random(1500)
+  local foliage_countdown = math.random(3000)
   
   local function spawn_foliage()
     if foliage_countdown >0 then
       foliage_countdown = foliage_countdown - 1
     else
-      game.add_actor(make_foliage(game,self.pos))
+      game.add_actor(make_foliage(game,self.pos + C.scavenger_cell_size *v2.random()))
       foliage_countdown = foliage_max_countdown
     end
   end
@@ -444,7 +443,7 @@ function make_scavenger(game, initial_pos)
   
   function self.update()
     if speed ==  0 then
-      --spawn_foliage()
+      spawn_foliage()
     end
 
     if speed > 0 then game.trace_circle(self.pos, self.pos, speed * 10) end
@@ -464,7 +463,9 @@ function make_scavenger(game, initial_pos)
         game.trace_circle(self.pos, target_carrion.pos, 5)
         if v2.sqrmag(self.pos - target_carrion.pos) < 15*15 then
           speed = min_speed
+          --eat carrion and get energy
           target_carrion.get_nibbled()
+          energy = energy + 1
           drawn_angle = angle + (math.random() - 0.5) * math.pi/4
         else
           speed = math.min(max_speed, speed + speed_delta)
@@ -472,17 +473,16 @@ function make_scavenger(game, initial_pos)
         end
       end
     else
-      attacking = false
       opacity = math.max(0, opacity - 1/120)
       if v2.sqrmag(self.pos - initial_pos) < 9 then
         speed = min_speed
+        energy = math.max(0, energy - 0.1)
         idle_countdown = idle_countdown or math.random(120, 180)
         idle_countdown = idle_countdown - 1
         if idle_countdown <= 0 then
           idle_countdown = nil
           find_target()
         end
-        leaving = false
       else
         speed = math.min(max_speed, speed + speed_delta)
         self.pos = self.pos + target_direction * speed
@@ -502,7 +502,8 @@ function make_scavenger(game, initial_pos)
 
       glColor4d(1,1,1,opacity)
 
-      glScaled(0.55, 0.55, 0.55)
+      local scale = math.min(0.2+energy/300,1)
+      glScaled(scale, scale, 1)
       glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
       game.resources.scavenger_outline:draw()
 
@@ -542,17 +543,17 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
   function self.get_nibbled()
     health = health - 0.001
     
-    local random = math.random(500)
+    local random = math.random(100)
     if random == 1 then
-      game.resources.scavenger_nibble1:play(C.volume)
+      game.resources.scavenger_nibble1:play(0.2*C.volume)
     elseif random == 2 then
-      game.resources.scavenger_nibble2:play(C.volume)
+      game.resources.scavenger_nibble2:play(0.2*C.volume)
     elseif random == 3 then
-      game.resources.scavenger_nibble3:play(C.volume)
+      game.resources.scavenger_nibble3:play(0.2*C.volume)
     elseif random == 4 then
-      game.resources.scavenger_nibble4:play(C.volume)
+      game.resources.scavenger_nibble4:play(0.2*C.volume)
     elseif random == 5 then
-      game.resources.scavenger_nibble5:play(C.volume)
+      game.resources.scavenger_nibble5:play(0.2*C.volume)
     end
     
     if health <= 0 then
