@@ -12,7 +12,9 @@ return {
   --- Sprite Graphics --------------------------------------------------------
   
   predator_outline = graphics.sprite_from_image('sprites/predator_head_outline.png', nil, 'center'),
-  predator_fill = graphics.sprite_from_image('sprites/predator_head_fill.png', nil, 'center'),
+  predator_head_fill = graphics.sprite_from_image('sprites/predator_head_fill.png', nil, 'center'),
+  predator_cell_fill = graphics.sprite_from_image('sprites/predator_cell_fill.png', nil, 'center'),
+
 
   herbivore_outline = graphics.sprite_from_image('sprites/herbivore_outline.png', nil, 'center'),
   herbivore_fill = graphics.sprite_from_image('sprites/herbivore_fill.png', nil, 'center'),
