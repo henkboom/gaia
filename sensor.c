@@ -36,11 +36,12 @@ static double activity_level = 0;
 
 static void GLFWCALL capture_loop(void *arg)
 {
+    static CvCapture *captureCam = NULL;
+    captureCam = cvCaptureFromCAM(0);
     while(1)
     {
-        static CvCapture *captureCam = NULL;
+        glfwLockMutex(ready_to_update);
 
-        if(!captureCam) captureCam = cvCaptureFromCAM(0);
         if(cvGrabFrame(captureCam))
         {
             IplImage* img = cvRetrieveFrame(captureCam, 0);
@@ -48,8 +49,6 @@ static void GLFWCALL capture_loop(void *arg)
                 cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
             if(!diffFrame) diffFrame =
                 cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
-
-            glfwLockMutex(ready_to_update);
 
             changed = 1;
 
@@ -71,6 +70,10 @@ static void GLFWCALL capture_loop(void *arg)
             lastFrame = cvCloneImage(img);
 
             activity_level = (double)differences/(area*255);
+        }
+        else
+        {
+            activity_level = 0;
         }
 
         glfwUnlockMutex(ready_to_read);
