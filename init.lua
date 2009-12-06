@@ -261,7 +261,6 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     }
     
     --- Load Scavengers ------------------------------------------------------
-    
     for x = 0, C.width, C.scavenger_cell_size do
       for y = 0, C.height, C.scavenger_cell_size do
         game.add_actor(creatures.make_scavenger(game,v2(x, y)))
@@ -286,7 +285,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     for i = 1, 70 do 
       game.add_actor(creatures.make_foliage(
       game,
-      v2(math.random() * C.width, math.random() * C.height)))  
+      v2(math.random() * C.width, math.random() * C.height)))
     end
     
     end))

@@ -23,8 +23,8 @@ function make_predator(game, _pos)
   local turn = 0
   local tail = nil
   local speed = min_speed
-  local length = 5
-  local scale = length / 150 + 0.5
+  local length = math.random(4, 10)
+  local scale = length / 60 + 0.5
   local hunger = 0.5
   local attacking =false
 
@@ -78,11 +78,11 @@ function make_predator(game, _pos)
       -- PREDATOR EAT SOUNDS
       local random = math.random(3)
       if random == 1 then
-        game.resources.predator_eat1:play(.18*C.volume)
+        game.resources.predator_eat1:play(C.volume)
       elseif random == 2 then
-        game.resources.predator_eat2:play(.18*C.volume)
+        game.resources.predator_eat2:play(C.volume)
       else
-        game.resources.predator_eat3:play(.18*C.volume)
+        game.resources.predator_eat3:play(C.volume)
       end
       
       hunger = hunger - 0.1
@@ -96,7 +96,7 @@ function make_predator(game, _pos)
       game.resources.predator_outline, game.resources.predator_head_fill))
    
     -- PREDATOR STARVE SOUNDS
-    game.resources.predator_starve:play(1.2*C.volume)
+    game.resources.predator_starve:play(C.volume)
     self.is_dead = true
   end
 
@@ -117,11 +117,11 @@ function make_predator(game, _pos)
           -- PREDATOR ATTACK SOUNDS
           local random = math.random(3)
           if random == 1 then
-           game.resources.predator_attack1:play(.3*C.volume)
+           game.resources.predator_attack1:play(C.volume)
           elseif random == 2 then
-            game.resources.predator_attack2:play(.3*C.volume)
+            game.resources.predator_attack2:play(C.volume)
           else
-           game.resources.predator_attack3:play(.3*C.volume)
+           game.resources.predator_attack3:play(C.volume)
           end
           
           
@@ -188,7 +188,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   self.pos = _pos
 
   local angle = 0
-  local scale = length / 150 + 0.25
+  local scale = length / 75 + 0.25
   local follow_distance = 40 * scale
   
   -- for drawing only
@@ -269,15 +269,15 @@ function make_herbivore(game, _pos)
       -- HERBIVORE EAT SOUNDS
       local random = math.random(5)
       if random == 1 then
-        game.resources.herbivore_eat1:play(.06*C.volume)
+        game.resources.herbivore_eat1:play(C.volume)
       elseif random == 2 then
-        game.resources.herbivore_eat2:play(.06*C.volume)
+        game.resources.herbivore_eat2:play(C.volume)
       elseif random == 3 then
-        game.resources.herbivore_eat3:play(.06*C.volume)
+        game.resources.herbivore_eat3:play(C.volume)
       elseif random == 4 then
-        game.resources.herbivore_eat4:play(.06*C.volume)
+        game.resources.herbivore_eat4:play(C.volume)
       else
-        game.resources.herbivore_eat5:play(.06*C.volume)
+        game.resources.herbivore_eat5:play(C.volume)
       end
 
       hunger =  hunger - 0.28
@@ -286,7 +286,7 @@ function make_herbivore(game, _pos)
   end
   
   local function reproduce()
-    game.resources.herbivore_reproduce:play(.6*C.volume)
+    game.resources.herbivore_reproduce:play(C.volume)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
@@ -299,11 +299,11 @@ function make_herbivore(game, _pos)
     -- HERBIVORE STARVE SOUNDS
     local random = math.random(3)
     if random == 1 then
-      game.resources.herbivore_starve1:play(.36*C.volume)
+      game.resources.herbivore_starve1:play(C.volume)
     elseif random == 2 then
-      game.resources.herbivore_starve2:play(.36*C.volume)
+      game.resources.herbivore_starve2:play(C.volume)
     else
-      game.resources.herbivore_starve3:play(.36*C.volume)
+      game.resources.herbivore_starve3:play(C.volume)
     end
     self.is_dead = true
   end
@@ -408,24 +408,24 @@ function make_scavenger(game, initial_pos)
   local angle = math.random() * 2 * math.pi
   local drawn_angle = angle
   local idle_countdown = 0
+  local attacking = false
+  local leaving = false
 
   local target_carrion = nil
   local target_direction = v2(1, 0)
   
-  local max_countdown = 20
-  local countdown = max_countdown
+  local foliage_max_countdown = 1500 + math.random(1000)
+  local foliage_countdown = math.random(2000)
   
   local function spawn_foliage()
-    if countdown >0 then
-      countdown = countdown - 1
+    if foliage_countdown >0 then
+      foliage_countdown = foliage_countdown - 1
     else
       game.add_actor(make_foliage(game,self.pos))
-      countdown = max_countdown
+      foliage_countdown = foliage_max_countdown
     end
   end
-    
-  
-  
+
   local function find_target()
     local eat_radius = 50 + math.random(6)^3
     local food = game.nearby(self.pos, eat_radius, 'carrion')
@@ -441,13 +441,16 @@ function make_scavenger(game, initial_pos)
   end
   
   function self.update()
-    --spawn_foliage()
+    if speed ==  0 then
+      --spawn_foliage()
+    end
 
     if speed > 0 then game.trace_circle(self.pos, self.pos, speed * 10) end
 
     angle = math.atan2(target_direction.y, target_direction.x)
     drawn_angle = angle
-    if target_carrion then
+    
+    if target_carrion then  
       opacity = math.min(1, opacity + 1/120)
       if target_carrion.is_dead then
         find_target()
@@ -467,6 +470,7 @@ function make_scavenger(game, initial_pos)
         end
       end
     else
+      attacking = false
       opacity = math.max(0, opacity - 1/120)
       if v2.sqrmag(self.pos - initial_pos) < 9 then
         speed = min_speed
@@ -476,6 +480,7 @@ function make_scavenger(game, initial_pos)
           idle_countdown = nil
           find_target()
         end
+        leaving = false
       else
         speed = math.min(max_speed, speed + speed_delta)
         self.pos = self.pos + target_direction * speed
@@ -487,7 +492,7 @@ function make_scavenger(game, initial_pos)
     if opacity > 0 then
 
       glBegin(GL_LINES)
-      glColor4d(1, 0.77, 0, opacity/4)
+      glColor4d(1, 0.77, 0, opacity)
       glVertex2d(0, 0)
       glColor4d(1, 0.77, 0, 0)
       glVertex2d(initial_pos.x - self.pos.x, initial_pos.y - self.pos.y)
@@ -515,13 +520,9 @@ function make_foliage(game, _pos)
   self.tags = {'foliage'}
 
   function self.draw_outline()
-    glColor3d(0.15, 0.1, 0.05)
+    glColor3d(0.5, 0.3, 0.15)
     game.resources.foliage_outline:draw()
     glColor3d(1, 1, 1)
-  end
-  
-  function self.draw_fill()
-    game.resources.foliage_fill:draw()
   end
 
   return self
@@ -538,11 +539,28 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
 
   function self.get_nibbled()
     health = health - 0.001
-    if health <= 0 then self.is_dead = true end
+    
+    local random = math.random(1000)
+    if random == 1 then
+      game.resources.scavenger_nibble1:play(C.volume)
+    elseif random == 2 then
+      game.resources.scavenger_nibble2:play(C.volume)
+    elseif random == 3 then
+      game.resources.scavenger_nibble3:play(C.volume)
+    elseif random == 4 then
+      game.resources.scavenger_nibble4:play(C.volume)
+    elseif random == 5 then
+      game.resources.scavenger_nibble5:play(C.volume)
+    end
+    
+    if health <= 0 then
+      self.is_dead = true
+      game.resources.scavenger_leave:play(C.volume)
+    end
   end
 
   local function generic_draw(sprite)
-    glColor4d(0.4, 0.3, 0.15, health)
+    glColor4d(0.6, 0.45, 0.225, health)
     glScaled(scale, scale, scale)
     glRotated(angle * 180/math.pi, 0, 0, 1)
     sprite:draw()
