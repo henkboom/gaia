@@ -176,8 +176,8 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
 
     function game.get_bounds_correction(pos)
       return v2(
-        pos.x < C.left_bound and 1 or pos.x > C.right_bound and -1 or 0,
-        pos.y < C.lower_bound and 1 or pos.y > C.upper_bound and -1 or 0)
+        pos.x < 0 and 1 or pos.x > C.width and -1 or 0,
+        pos.y < 0 and 1 or pos.y > C.height and -1 or 0)
     end
 
     function game.out_of_world(pos, distance)
@@ -195,7 +195,11 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glOrtho(0, C.width, 0, C.height, 1, -1)
+        if(game.is_key_down(string.byte('`'))) then
+          glOrtho(-C.width, 2*C.width, -C.height, 2*C.height, 1, -1)
+        else
+          glOrtho(0, C.width, 0, C.height, 1, -1)
+        end
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         glColor3d(1, 1, 1)
@@ -211,6 +215,14 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end,
       draw_inner_fill = function ()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+      end,
+      draw_debug = function ()
+        glBegin(GL_LINE_LOOP)
+        glVertex2d(C.left_bound, C.lower_bound)
+        glVertex2d(C.right_bound, C.lower_bound)
+        glVertex2d(C.right_bound, C.upper_bound)
+        glVertex2d(C.left_bound, C.upper_bound)
+        glEnd()
       end,
     }
 
