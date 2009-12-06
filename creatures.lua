@@ -90,7 +90,7 @@ function make_predator(game, _pos)
     end
   end
 
-  function self.starve()
+  local function starve()
     --make carrion
     game.add_actor(make_carrion(game, self.pos, angle, scale,
       game.resources.predator_outline, game.resources.predator_head_fill))
@@ -153,7 +153,7 @@ function make_predator(game, _pos)
     hunger = hunger + 0.002/60 * (2 + length*0.75)
     eat()
     if hunger >= 1 then
-      self.starve()
+      starve()
     elseif hunger <= 0 then
       hunger = hunger + 0.5
       lengthen()
@@ -169,6 +169,7 @@ function make_predator(game, _pos)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
+    glColor3d(1, 1, 1)
   end
 
   function self.draw_fill()
@@ -194,7 +195,7 @@ function make_predator_cell(game, _pos, head, length, tail)
   -- for drawing only
   local hunger = 0
 
-  function self.starve()
+  local function starve()
     --make carrion
     game.add_actor(make_carrion(game, self.pos, angle, scale,
       game.resources.predator_outline, game.resources.predator_cell_fill))
@@ -209,7 +210,7 @@ function make_predator_cell(game, _pos, head, length, tail)
     end
 
     if head.is_dead then
-      self.starve()
+      starve()
     else
       if v2.mag(self.pos - head.pos) > follow_distance then
         self.pos = head.pos + v2.norm(self.pos - head.pos) * follow_distance
@@ -249,7 +250,7 @@ end
 function make_herbivore(game, _pos)
   local self = {}
   self.pos = _pos
-  self.tags = {'prey', 'herbivore'}
+  self.tags = {'prey', 'herbivore', 'interactive'}
 
   local vel = v2(0,0)
   local target_vel
@@ -259,13 +260,13 @@ function make_herbivore(game, _pos)
   local hunger = 0.5
   local desperation = 0
   local inner_rotation = math.random(360)
+  local interaction_level = 0
   
   local function eat()
     local eat_radius = 20
     local food = game.nearby(self.pos, eat_radius, 'foliage')
     
     for _, f in ipairs(food) do
-      
       -- HERBIVORE EAT SOUNDS
       local random = math.random(5)
       if random == 1 then
@@ -290,7 +291,7 @@ function make_herbivore(game, _pos)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
-  function self.starve()
+  local function starve()
     --make carrion
     local r = game.resources
     game.add_actor(make_carrion(game, self.pos, 0, 1,
@@ -308,7 +309,6 @@ function make_herbivore(game, _pos)
     self.is_dead = true
   end
   
-  
   function self.update()
     eat()
     hunger = hunger + 0.0003
@@ -323,7 +323,7 @@ function make_herbivore(game, _pos)
       reproduce()
       hunger = 0.5
     elseif hunger >= 1 then
-      self.starve()
+      starve()
     end 
     
     -- Measuring Hunger
@@ -361,6 +361,11 @@ function make_herbivore(game, _pos)
     
     self.pos = self.pos + vel
     vel = vel * 0.98 + target_vel * 0.02
+
+  end
+
+  function self.set_interaction_level(level)
+    interaction_level = level
   end
   
   local function get_angle()
@@ -368,7 +373,9 @@ function make_herbivore(game, _pos)
   end
 
   function self.draw_outline()
-    glColor3d(0, 1, 0.2)
+    if interaction_level == 0 then
+      glColor3d(0, 1, 0.2)
+    end
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
   end
