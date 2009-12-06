@@ -11,6 +11,6 @@ C.right_bound= C.width + buffer
 C.lower_bound = -buffer
 C.upper_bound = C.height + buffer
 
-C.volume = 1
+C.volume = 3
 
 return C

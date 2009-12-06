@@ -226,23 +226,25 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end,
     }
 
-    local predator_countdown = 300
-    local herbivore_countdown = 150
+    local predator_countdown
+    local herbivore_countdown
     game.add_actor{
       preupdate = function ()
         if #game.get_actors_by_tag('predator') == 0 then
+          predator_countdown = predator_countdown or 600
           predator_countdown = predator_countdown - 1
           if predator_countdown <= 0 then
-            predator_countdown = 300
+            predator_countdown = nil
             game.add_actor(creatures.make_predator(
               game,
               v2(math.random() * C.width, math.random() * C.height)))
           end
         end
         if #game.get_actors_by_tag('herbivore') == 0 then
+          herbivore_countdown = herbivore_countdown or 600
           herbivore_countdown = herbivore_countdown - 1
           if herbivore_countdown <= 0 then
-            herbivore_countdown = 150
+            herbivore_countdown = nil
             game.add_actor(creatures.make_herbivore(
               game,
               v2(math.random() * C.width, math.random() * C.height)))

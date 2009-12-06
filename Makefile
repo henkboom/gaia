@@ -8,6 +8,8 @@ macosx:
 	make gaia sensor.so PLATFORM=macosx \
 		MODULE_FLAGS="-lhighgui -bundle -undefined dynamic_lookup"
 
+.PHONY: gaia
+
 gaia:
 	make -C dokidoki-support $(PLATFORM) NAME=../gaia
 
