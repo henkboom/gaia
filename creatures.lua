@@ -40,7 +40,12 @@ function make_predator(game, _pos)
     end
   end
 
+  local countdown = 0
+  local cache = nil
   local function food_direction()
+    countdown = countdown - 1
+    if countdown > 0 then return cache end
+    countdown = math.random(5, 6)
     local left_pos = self.pos + v2.unit(angle + math.pi/6) * 90
     local right_pos = self.pos + v2.unit(angle - math.pi/6) * 90
     local radius = 60
@@ -53,14 +58,15 @@ function make_predator(game, _pos)
     game.trace_circle(self.pos, right_pos, radius)
 
     if left_count == 0 and right_count == 0 then
-      return false
+      cache = false
     elseif left_count < right_count then
-      return -1
+      cache = -1
     elseif left_count > right_count then
-      return 1
+      cache = 1
     else
-      return 0
+      cache = 0
     end
+    return cache
   end
 
   local function eat()
@@ -344,7 +350,7 @@ function make_herbivore(game, _pos)
         desperation = desperation + 1
 
         local bounds_correction = game.get_bounds_correction(self.pos)
-        if bounds_correction == v2.zero then
+        if bounds_correction ~= v2.zero then
           target_vel = bounds_correction + v2.random() / 2
         else
           target_vel = v2.random() * (1 + desperation/5) / 2
@@ -414,23 +420,15 @@ function make_scavenger(game, initial_pos)
 
     game.trace_circle(self.pos, self.pos, eat_radius)
 
-    target_carrion = food[1]
-    if target_carrion then
-      local min_distance = v2.sqrmag(target_carrion.pos - self.pos)
-      for _, f in ipairs(food) do
-        if v2.sqrmag(f.pos - self.pos) < min_distance then
-          target_carrion = f
-        end
-      end
-    end
-
-    if target_carrion then
+    if #food == 0 then
+      target_carrion = nil
+    else
+      target_carrion = food[math.random(#food)]
       target_direction = v2.norm(target_carrion.pos - self.pos)
     end
   end
   
   function self.update()
-    game.trace_circle(self.pos, self.pos, speed * 10)
     angle = math.atan2(target_direction.y, target_direction.x)
     drawn_angle = angle
     if target_carrion then
