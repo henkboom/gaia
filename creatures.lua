@@ -14,10 +14,11 @@ function make_predator(game, _pos)
   local speed_increment = 0.05
   local max_turn_speed = math.pi/64
   local turn_speed_factor = math.pi/256
+  local interaction_level = 0
 
   local self = {}
   self.pos = _pos
-  self.tags = {'predator'}
+  self.tags = {'predator', 'interactive'}
 
   local angle = math.random() * 2 * math.pi
   local turn = 0
@@ -27,6 +28,11 @@ function make_predator(game, _pos)
   local scale = length / 75 + 0.5
   local hunger = 0.5
   local attacking =false
+
+  function self.set_interaction_level(level)
+    interaction_level = level * 10
+    if tail then tail.set_interaction_level(interaction_level) end
+  end
 
   local function lengthen ()
     local old_tail = tail
@@ -200,6 +206,12 @@ function make_predator_cell(game, _pos, head, length, tail)
   
   -- for drawing only
   local hunger = 0
+  local interaction_level = 0
+
+  function self.set_interaction_level(level)
+    interaction_level = level
+    if tail then tail.set_interaction_level(interaction_level) end
+  end
 
   local function starve()
     --make carrion
@@ -380,12 +392,11 @@ function make_herbivore(game, _pos)
   end
 
   function self.draw_outline()
-    if interaction_level == 0 then
-      glColor3d(0.15, color_mult, 0.3)
-    else
-      local x = interaction_level * v2.random() * 2
-      glTranslated(x.x, x.y, 1)
+    if interaction_level > 0 then
+      glColor4d(0.15, color_mult, 0.3, 0.4 + interaction_level)
+      game.resources.herbivore_glow:draw()
     end
+    glColor3d(0.15, color_mult, 0.3)
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
   end
