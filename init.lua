@@ -34,7 +34,7 @@ function init_sensing(game)
         countdown = 6
         local ret, err = sensor.read_activity_level()
         if ret then
-          local measurement = math.max(0, math.min(1, (ret - 0.001)*20))
+          local measurement = math.max(0, math.min(1, (ret - 0.001)*50))
           activity_level = activity_level * 0.8 + measurement * 0.2
           print('sensed ' .. activity_level)
         else
@@ -44,12 +44,14 @@ function init_sensing(game)
     end,
     draw_debug = function ()
       local width = activity_level * C.width
+      glColor3d(0, 0, 0.5)
       glBegin(GL_QUADS)
       glVertex2d(0, 0)
       glVertex2d(width, 0)
       glVertex2d(width, 10)
       glVertex2d(0, 10)
       glEnd()
+      glColor3d(1, 1, 1)
       local tex = nil
       if game.is_key_down(string.byte("1")) then
         tex = sensor.get_texture(false)
@@ -132,7 +134,7 @@ function init_collision_detection(game, tags)
 end
 
 function init_interaction(game)
-  local radius = 300
+  local radius = 350
 
   local interaction_set = {}
   
@@ -159,10 +161,12 @@ function init_interaction(game)
     print(1)
     while true do
       local position = v2(
-        math.random(C.left_bound + radius, C.right_bound - radius),
-        math.random(C.lower_bound + radius, C.upper_bound - radius))
-      interact_with(game.nearby(position, 100, 'interactive'))
-      for i = 1, 180 do
+        math.random(C.left_bound, C.right_bound),
+        math.random(C.lower_bound, C.upper_bound))
+      local actors = irandomize(game.nearby(position, radius, 'interactive'))
+      for i = 25, #actors do actors[i] = nil end
+      interact_with(actors)
+      for i = 1, 600 do
         wait()
       end
     end
@@ -300,14 +304,14 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       end
     }
     
-    --[[----- Generate Foliage Over Time -------------------------------------------
+    ----- Generate Foliage Over Time -------------------------------------------
     game.add_actor{
       update=function()
-        if math.random(100) < 12   then
-          game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height)))
+        if math.random(100) < 5   then
+          game.add_actor(creatures.make_foliage(game,v2(math.random() * C.width, math.random() * C.height), 0))
         end
       end
-    }]]
+    }
     
     --- Load Scavengers ------------------------------------------------------
     for x = 0, C.width, C.scavenger_cell_size do

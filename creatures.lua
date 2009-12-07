@@ -313,7 +313,7 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0004
+    hunger = hunger + 0.0004 - interaction_level * 0.003
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0
@@ -367,7 +367,7 @@ function make_herbivore(game, _pos)
   end
 
   function self.set_interaction_level(level)
-    interaction_level = level
+    interaction_level = level * 10
   end
   
   local function get_angle()
@@ -377,6 +377,9 @@ function make_herbivore(game, _pos)
   function self.draw_outline()
     if interaction_level == 0 then
       glColor3d(0, 1, 0.2)
+    else
+      local x = interaction_level * v2.random() * 2
+      glTranslated(x.x, x.y, 1)
     end
     game.resources.herbivore_outline:draw()
     glColor3d(1, 1, 1)
@@ -429,8 +432,12 @@ function make_scavenger(game, initial_pos)
     if foliage_countdown >0 then
       foliage_countdown = foliage_countdown - 1
     else
-      game.add_actor(make_foliage(game,self.pos + C.scavenger_cell_size *v2.random()))
-      foliage_countdown = foliage_max_countdown
+      if energy > 0 then
+        game.add_actor(make_foliage(game,self.pos + 20 *v2.random(), 0))
+      else
+        --game.add_actor(make_foliage(game,self.pos + C.scavenger_cell_size *v2.random(), 0))
+      end
+      foliage_countdown = math.max(0, foliage_max_countdown - energy)
     end
   end
 
@@ -450,7 +457,7 @@ function make_scavenger(game, initial_pos)
   
   function self.update()
     if speed ==  0 then
-      spawn_foliage()
+      --spawn_foliage()
     end
 
     if speed > 0 then game.trace_circle(self.pos, self.pos, speed * 10) end
@@ -507,9 +514,9 @@ function make_scavenger(game, initial_pos)
       glVertex2d(initial_pos.x - self.pos.x, initial_pos.y - self.pos.y)
       glEnd()
 
-      glColor4d(1,1,1,opacity)
+      glColor4d(1, 0.77, 0,opacity)
 
-      local scale = math.min(0.2+energy/300,1)
+      local scale = math.min(0.2+energy/400,0.8)
       glScaled(scale, scale, 1)
       glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
       game.resources.scavenger_outline:draw()
@@ -524,13 +531,17 @@ end
 
 --- Foliage -----------------------------------------------------------------
 
-function make_foliage(game, _pos)
+function make_foliage(game, _pos, foliage_type)
   local self = {}
   self.pos = _pos
   self.tags = {'foliage'}
 
   function self.draw_outline()
-    glColor3d(0.5, 0.3, 0.15)
+    if foliage_type == 0 then
+      glColor3d(0.5, 0.3, 0.15)
+    else
+      glColor3d(0.8, 0.3, 0.15)
+    end
     game.resources.foliage_outline:draw()
     glColor3d(1, 1, 1)
   end
@@ -549,6 +560,10 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
 
   function self.get_nibbled()
     health = health - 0.001
+    
+    if math.random(1000)< 5 then
+      game.add_actor(make_foliage(game,self.pos + 25 * math.random() * v2.unit(math.random() * 2 * math.pi), 1))
+    end
     
     local random = math.random(100)
     if random == 1 then
