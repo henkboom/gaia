@@ -393,7 +393,7 @@ function make_herbivore(game, _pos)
 
   function self.draw_outline()
     if interaction_level > 0 then
-      glColor4d(0.15, color_mult, 0.3, 0.4 + interaction_level)
+      glColor4d(0.15, color_mult, 0.3, interaction_level)
       game.resources.herbivore_glow:draw()
     end
     glColor3d(0.15, color_mult, 0.3)
