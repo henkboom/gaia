@@ -95,8 +95,10 @@ function init_collision_detection(game, tags)
           local col = grid[i]
           col[j] = col[j] or {n=0}
           local bucket = col[j]
-          bucket[bucket.n + 1] = a
-          bucket.n = bucket.n + 1
+          if bucket.n < 6 then
+            bucket[bucket.n + 1] = a
+            bucket.n = bucket.n + 1
+          end
         end
       end
     end
