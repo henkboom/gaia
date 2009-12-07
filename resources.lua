@@ -26,6 +26,7 @@ return {
   
   foliage_outline = graphics.sprite_from_image('sprites/foliage_outline.png', nil, 'center'),
   --- Sounds -----------------------------------------------------------------
+  interaction_wave = try_load_wav("sounds/interaction.wav"),
   
   predator_attack1 = try_load_wav("sounds/predator_attack1.wav"),
   predator_attack2 = try_load_wav("sounds/predator_attack2.wav"),

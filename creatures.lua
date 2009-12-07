@@ -69,24 +69,28 @@ function make_predator(game, _pos)
     return cache
   end
 
+  local eat_countdown = 0
   local function eat()
-    local eat_radius = 20
-    game.trace_circle(self.pos, self.pos, eat_radius)
-    local food = game.nearby(self.pos, eat_radius, 'prey')
-    for _, f in ipairs(food) do
-      
-      -- PREDATOR EAT SOUNDS
-      local random = math.random(3)
-      if random == 1 then
-        game.resources.predator_eat1:play(C.volume)
-      elseif random == 2 then
-        game.resources.predator_eat2:play(C.volume)
-      else
-        game.resources.predator_eat3:play(C.volume)
+    eat_countdown = eat_countdown - 1
+    if eat_countdown <= 0 then
+      local eat_radius = 20
+      game.trace_circle(self.pos, self.pos, eat_radius)
+      local food = game.nearby(self.pos, eat_radius, 'prey')[1]
+      if food then
+        -- PREDATOR EAT SOUNDS
+        local random = math.random(3)
+        if random == 1 then
+          game.resources.predator_eat1:play(C.volume)
+        elseif random == 2 then
+          game.resources.predator_eat2:play(C.volume)
+        else
+          game.resources.predator_eat3:play(C.volume)
+        end
+        
+        hunger = hunger - 0.1
+        food.is_dead = true
+        eat_countdown = 8
       end
-      
-      hunger = hunger - 0.1
-      f.is_dead = true
     end
   end
 
@@ -263,7 +267,7 @@ function make_herbivore(game, _pos)
   local desperation = 0
   local inner_rotation = math.random(360)
   local interaction_level = 0
-  local color_mult = math.random() * 0.3 + 0.5
+  local color_mult = math.random() * 0.4 + 0.6
   
   local function eat()
     local eat_radius = 20
@@ -284,7 +288,7 @@ function make_herbivore(game, _pos)
         game.resources.herbivore_eat5:play(C.volume)
       end
 
-      hunger =  hunger - 0.28
+      hunger =  hunger - 0.2
       f.is_dead = true
     end
   end
@@ -314,7 +318,7 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0004 - interaction_level * 0.003
+    hunger = hunger + 0.0004 - interaction_level * 0.002
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0
@@ -377,7 +381,7 @@ function make_herbivore(game, _pos)
 
   function self.draw_outline()
     if interaction_level == 0 then
-      glColor3d(0, color_mult, 0.2)
+      glColor3d(0.15, color_mult, 0.3)
     else
       local x = interaction_level * v2.random() * 2
       glTranslated(x.x, x.y, 1)
