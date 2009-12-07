@@ -263,6 +263,7 @@ function make_herbivore(game, _pos)
   local desperation = 0
   local inner_rotation = math.random(360)
   local interaction_level = 0
+  local color_mult = math.random() * 0.3 + 0.5
   
   local function eat()
     local eat_radius = 20
@@ -376,7 +377,7 @@ function make_herbivore(game, _pos)
 
   function self.draw_outline()
     if interaction_level == 0 then
-      glColor3d(0, 1, 0.2)
+      glColor3d(0, color_mult, 0.2)
     else
       local x = interaction_level * v2.random() * 2
       glTranslated(x.x, x.y, 1)
