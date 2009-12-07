@@ -31,19 +31,22 @@ function init_sensing(game)
     preupdate = function ()
       countdown = countdown - 1
       if countdown <= 0 then
-        countdown = 4 + math.random(3)
+        countdown = 3
         local ret, err = sensor.read_activity_level()
         if ret then
-          local measurement = math.max(0, math.min(1, (ret - 0.001)*50))
-          activity_level = activity_level * 0.5 + measurement * 0.5
-          print('sensed ' .. activity_level)
+          local measurement = math.max(0, math.min(1, (ret - 0.001)*85))
+          if measurement < activity_level then
+            activity_level = activity_level * 0.95 + measurement * 0.05
+          else
+            activity_level = activity_level * 0.5 + measurement * 0.5
+          end
+          --print('sensed ' .. activity_level)
         else
-          print(err)
+          --print(err)
         end
-        game.resources.interaction_wave:play(activity_level*2)
       end
     end,
-    --[[draw_debug = function ()
+    REMOVEDdraw_debug = function ()
       local width = activity_level * C.width
       glColor3d(0, 0, 0.5)
       glBegin(GL_QUADS)
@@ -75,7 +78,7 @@ function init_sensing(game)
         glBindTexture(GL_TEXTURE_2D, 0)
         glDisable(GL_TEXTURE_2D)
       end
-    end--]]
+    end
   }
 end
 
@@ -154,7 +157,7 @@ function init_interaction(game)
   local function update_interaction_level ()
     for a in pairs(interaction_set) do
       a.set_interaction_level(0.001 + game.get_activity_level())
-      game.trace_circle(a.pos, a.pos, 20)
+      game.trace_circle(a.pos, a.pos, 10)
     end
   end
 
@@ -278,6 +281,21 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glVertex2d(C.left_bound, C.upper_bound)
         glEnd()
       end,
+    }
+    
+    -- intsdn
+    local interaction_countdown = 0
+    local interaction_level = 0
+    game.add_actor{
+      update = function ()
+        interaction_level = interaction_level * 0.99 + game.get_activity_level() * 0.01
+        interaction_countdown = interaction_countdown - interaction_level
+        if interaction_countdown <= 0 then
+          interaction_countdown = 7
+          game.resources.interaction_wave:play(0 + interaction_level * 8)
+          print(interaction_level)
+        end
+      end
     }
 
     local predator_countdown

@@ -162,7 +162,7 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.002/60 * (2 + length*0.75)
+    hunger = hunger + 0.002/60 * (3 + length*0.75)
     eat()
     if hunger >= 1 then
       starve()
@@ -330,7 +330,7 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0004 - interaction_level * 0.002
+    hunger = hunger + 0.0004 - interaction_level * 0.0014
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0
@@ -384,7 +384,7 @@ function make_herbivore(game, _pos)
   end
 
   function self.set_interaction_level(level)
-    interaction_level = level * 10
+    interaction_level = interaction_level * 0.7 + 0.3 * level * 10
   end
   
   local function get_angle()
@@ -393,7 +393,7 @@ function make_herbivore(game, _pos)
 
   function self.draw_outline()
     if interaction_level > 0 then
-      glColor4d(0.15, color_mult, 0.3, interaction_level)
+      glColor4d(0.3, color_mult, 0.6, interaction_level/5)
       game.resources.herbivore_glow:draw()
     end
     glColor3d(0.15, color_mult, 0.3)
@@ -532,7 +532,7 @@ function make_scavenger(game, initial_pos)
 
       glColor4d(1, 0.77, 0,opacity)
 
-      local scale = math.min(0.2+energy/400,0.8)
+      local scale = math.min(0.5+energy/1200,0.8)
       glScaled(scale, scale, 1)
       glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
       game.resources.scavenger_outline:draw()
