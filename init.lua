@@ -43,7 +43,7 @@ function init_sensing(game)
         game.resources.interaction_wave:play(activity_level*2)
       end
     end,
-    draw_debug = function ()
+    --[[draw_debug = function ()
       local width = activity_level * C.width
       glColor3d(0, 0, 0.5)
       glBegin(GL_QUADS)
@@ -75,7 +75,7 @@ function init_sensing(game)
         glBindTexture(GL_TEXTURE_2D, 0)
         glDisable(GL_TEXTURE_2D)
       end
-    end
+    end--]]
   }
 end
 
