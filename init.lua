@@ -31,15 +31,16 @@ function init_sensing(game)
     preupdate = function ()
       countdown = countdown - 1
       if countdown <= 0 then
-        countdown = 6
+        countdown = 4 + math.random(3)
         local ret, err = sensor.read_activity_level()
         if ret then
           local measurement = math.max(0, math.min(1, (ret - 0.001)*50))
-          activity_level = activity_level * 0.8 + measurement * 0.2
+          activity_level = activity_level * 0.5 + measurement * 0.5
           print('sensed ' .. activity_level)
         else
           print(err)
         end
+        game.resources.interaction_wave:play(activity_level*2)
       end
     end,
     draw_debug = function ()
