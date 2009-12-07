@@ -95,7 +95,7 @@ function init_collision_detection(game, tags)
           local col = grid[i]
           col[j] = col[j] or {n=0}
           local bucket = col[j]
-          if bucket.n < 6 then
+          if bucket.n < 2 then
             bucket[bucket.n + 1] = a
             bucket.n = bucket.n + 1
           end
@@ -335,13 +335,13 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         game,
         v2(math.random() * C.width, math.random() * C.height)))  
     end
-    --[[
+    
     ----- Load Foliage -------------------------------------------------------
     for i = 1, 70 do 
       game.add_actor(creatures.make_foliage(
       game,
-      v2(math.random() * C.width, math.random() * C.height)))
+      v2(math.random() * C.width, math.random() * C.height), 0))
     end
-    ]]
+    
     end))
 
