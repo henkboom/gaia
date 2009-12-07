@@ -16,6 +16,7 @@ return {
   predator_cell_fill = graphics.sprite_from_image('sprites/predator_cell_fill.png', nil, 'center'),
 
 
+  herbivore_glow = graphics.sprite_from_image('sprites/herbivore_glow.png', nil, 'center'),
   herbivore_outline = graphics.sprite_from_image('sprites/herbivore_outline.png', nil, 'center'),
   herbivore_fill = graphics.sprite_from_image('sprites/herbivore_fill.png', nil, 'center'),
   
