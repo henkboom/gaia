@@ -1,3 +1,4 @@
+dokidoki_disable_debug = true
 require 'dokidoki.module' [[]]
 
 local actor_scene = require 'dokidoki.actor_scene'
@@ -10,7 +11,7 @@ local sensor = require 'sensor'
 
 import 'gl'
 import 'dokidoki.base'
-kernel.set_video_mode(1024,768)
+kernel.set_video_mode(1024, 768)
 kernel.set_ratio(C.width/C.height)
 
 function nwipe(t)
@@ -34,12 +35,13 @@ function init_sensing(game)
         countdown = 3
         local ret, err = sensor.read_activity_level()
         if ret then
-          local measurement = math.max(0, math.min(1, (ret - 0.001)*85))
+          local measurement = math.max(0, math.min(1, (ret - 0.001)*140))
           if measurement < activity_level then
             activity_level = activity_level * 0.95 + measurement * 0.05
           else
             activity_level = activity_level * 0.5 + measurement * 0.5
           end
+	  if activity_level > 0.4 then activity_level = 0.4 end
           --print('sensed ' .. activity_level)
         else
           --print(err)
@@ -140,7 +142,7 @@ function init_collision_detection(game, tags)
 end
 
 function init_interaction(game)
-  local radius = 350
+  local radius = 10000
 
   local interaction_set = {}
   
@@ -169,10 +171,13 @@ function init_interaction(game)
       local position = v2(
         math.random(C.left_bound, C.right_bound),
         math.random(C.lower_bound, C.upper_bound))
-      local actors = irandomize(game.nearby(position, radius, 'interactive'))
-      for i = 25, #actors do actors[i] = nil end
+      local actors = game.nearby(position, radius, 'interactive')
+      table.sort(actors, function (a, b)
+	return v2.sqrmag(a.pos - position) < v2.sqrmag(b.pos - position)
+      end)
+      for i = 10, #actors do actors[i] = nil end
       interact_with(actors)
-      for i = 1, 600 do
+      for i = 1, 8*60 do
         wait()
       end
     end
@@ -250,6 +255,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glClear(GL_COLOR_BUFFER_BIT)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+	glEnable(GL_LINE_SMOOTH)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         if(game.is_key_down(string.byte('`'))) then
@@ -291,8 +297,8 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         interaction_level = interaction_level * 0.99 + game.get_activity_level() * 0.01
         interaction_countdown = interaction_countdown - interaction_level
         if interaction_countdown <= 0 then
-          interaction_countdown = 7
-          game.resources.interaction_wave:play(0 + interaction_level * 8)
+          interaction_countdown = 4
+          game.resources.interaction_wave:play(0 + interaction_level * 4)
           print(interaction_level)
         end
       end

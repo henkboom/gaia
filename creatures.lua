@@ -384,7 +384,11 @@ function make_herbivore(game, _pos)
   end
 
   function self.set_interaction_level(level)
-    interaction_level = interaction_level * 0.7 + 0.3 * level * 10
+    if level == 0 then
+      interaction_level = 0
+    else
+      interaction_level = interaction_level * 0.7 + 0.3 * level * 10
+    end
   end
   
   local function get_angle()
@@ -392,9 +396,13 @@ function make_herbivore(game, _pos)
   end
 
   function self.draw_outline()
+    local interaction_level = interaction_level + game.get_activity_level()*4
     if interaction_level > 0 then
       glColor4d(0.3, color_mult, 0.6, interaction_level/5)
+      glPushMatrix()
+      glScaled(1.1, 1.1, 1)
       game.resources.herbivore_glow:draw()
+      glPopMatrix();
     end
     glColor3d(0.15, color_mult, 0.3)
     game.resources.herbivore_outline:draw()

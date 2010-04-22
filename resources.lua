@@ -1,3 +1,4 @@
+local gl = require 'gl'
 local mixer = require 'mixer'
 local graphics = require 'dokidoki.graphics'
 
@@ -7,7 +8,7 @@ local function try_load_wav (filename)
   return mixer.load_wav(filename) or dummy_sound
 end
 
-return {
+local resources = {
   
   --- Sprite Graphics --------------------------------------------------------
   
@@ -56,3 +57,23 @@ return {
   scavenger_attack = try_load_wav("sounds/scavenger_attack.wav"),
   scavenger_leave = try_load_wav("sounds/scavenger_leave.wav"),
 }
+
+local function smoothen(sprite)
+  gl.glBindTexture(gl.GL_TEXTURE_2D, sprite.tex.name)
+  gl.glTexParameterf(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+  gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
+
+end
+
+smoothen(resources.predator_outline)
+smoothen(resources.predator_head_fill)
+smoothen(resources.predator_cell_fill)
+smoothen(resources.herbivore_glow)
+smoothen(resources.herbivore_outline)
+smoothen(resources.herbivore_fill)
+smoothen(resources.herbivore_inner_outline)
+smoothen(resources.herbivore_inner_fill)
+smoothen(resources.scavenger_outline)
+smoothen(resources.foliage_outline)
+
+return resources
