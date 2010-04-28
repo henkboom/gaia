@@ -18,3 +18,4 @@ sensor.so: sensor.c
 
 clean:
 	make -C dokidoki-support clean NAME=../gaia
+	rm -rf sensor.so
