@@ -5,8 +5,8 @@ linux:
 		MODULE_FLAGS="-lhighgui -shared"
 
 macosx:
-	make gaia sensor.so PLATFORM=macosx \
-		MODULE_FLAGS="-lhighgui -bundle -undefined dynamic_lookup"
+	make gaia sensor.so PLATFORM=macosx MACOSX_DEPLOYMENT_TARGET=10.4 \
+		MODULE_FLAGS="-lhighgui -lcv -lcxcore -bundle -undefined dynamic_lookup"
 
 .PHONY: gaia
 
