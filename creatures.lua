@@ -10,7 +10,7 @@ import 'gl'
 function make_predator(game, _pos)
   -- constants
   local min_speed = 0.7
-  local max_speed = 3
+  local max_speed = 3.5
   local speed_increment = 0.05
   local max_turn_speed = math.pi/64
   local turn_speed_factor = math.pi/256
@@ -18,7 +18,7 @@ function make_predator(game, _pos)
 
   local self = {}
   self.pos = _pos
-  self.tags = {'predator', 'interactive'}
+  self.tags = {'predator'}
 
   local angle = math.random() * 2 * math.pi
   local turn = 0
@@ -30,7 +30,11 @@ function make_predator(game, _pos)
   local attacking =false
 
   function self.set_interaction_level(level)
-    interaction_level = level * 10
+    if level == 0 then
+      interaction_level = 0
+    else
+      interaction_level = interaction_level * 0.7 + 0.3 * level * 10
+    end
     if tail then tail.set_interaction_level(interaction_level) end
   end
 
@@ -95,7 +99,7 @@ function make_predator(game, _pos)
         
         hunger = hunger - 0.1
         food.is_dead = true
-        eat_countdown = 8
+        eat_countdown = 6
       end
     end
   end
@@ -136,13 +140,12 @@ function make_predator(game, _pos)
            game.resources.predator_attack3:play(C.volume)
           end
           
-          
           attacking=true
         end
-        speed = math.min(speed + speed_increment, max_speed)
+        speed = math.min(speed + speed_increment, max_speed) + interaction_level *0.1
         turn = turn + fd * turn_speed_factor
       else
-        speed = math.max(speed - speed_increment, min_speed)
+        speed = math.max(speed - speed_increment, min_speed) + interaction_level * 0.1
         attacking = false
       end
     else
@@ -162,7 +165,7 @@ function make_predator(game, _pos)
     self.pos = self.pos + v2.unit(angle) * speed
 
     -- hunger/food
-    hunger = hunger + 0.002/60 * (3 + length*0.75)
+    hunger = hunger + 0.002/60 * (3 + length*0.60)
     eat()
     if hunger >= 1 then
       starve()
@@ -177,7 +180,20 @@ function make_predator(game, _pos)
   end
 
   function self.draw_outline()
-    glColor3d(1.0 - hunger, 0.2 * hunger, 0.7 - 0.2 * hunger)    
+    local r = 1.0 - hunger
+    local g = 0.2 - hunger
+    local b = 0.7 - 0.2 * hunger
+    --[[
+    local interaction = interaction_level + game.get_activity_level()*4
+    if interaction > 0 then
+      glColor4d(r, g, b, interaction/5)
+      glPushMatrix()
+      glScaled(scale*2.5, scale*2.5, 1)
+      game.resources.herbivore_glow:draw()
+      glPopMatrix();
+    end
+    ]]
+    glColor3d(r, g, b)    
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -238,7 +254,20 @@ function make_predator_cell(game, _pos, head, length, tail)
   end
 
   function self.draw_outline()
-    glColor3d(1.0 - hunger, 0.2 * hunger, 0.7 - 0.2 * hunger)
+    local r = 1.0 - hunger
+    local g = 0.2 - hunger
+    local b = 0.7 - 0.2 * hunger
+    --[[
+    local interaction = interaction_level + game.get_activity_level()*4
+    if interaction > 0 then
+      glColor4d(r, g, b, interaction/5)
+      glPushMatrix()
+      glScaled(scale*2.5, scale*2.5, 1)
+      game.resources.herbivore_glow:draw()
+      glPopMatrix();
+    end
+]]
+    glColor3d(r, g, b)
     glRotated(angle * 180 / math.pi, 0, 0, 1)
     glScaled(scale, scale, 1)
     game.resources.predator_outline:draw()
@@ -300,7 +329,7 @@ function make_herbivore(game, _pos)
         game.resources.herbivore_eat5:play(C.volume)
       end
 
-      hunger =  hunger - 0.2
+      hunger =  hunger - 0.23
       f.is_dead = true
     end
   end
@@ -330,7 +359,7 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0004 - interaction_level * 0.0014
+    hunger = hunger + 0.0004 - interaction_level * 0.0025
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0
@@ -396,9 +425,9 @@ function make_herbivore(game, _pos)
   end
 
   function self.draw_outline()
-    local interaction_level = interaction_level + game.get_activity_level()*4
-    if interaction_level > 0 then
-      glColor4d(0.3, color_mult, 0.6, interaction_level/5)
+    local interaction = interaction_level + game.get_activity_level()*4
+    if interaction > 0 then
+      glColor4d(0.3, color_mult, 0.6, interaction/5)
       glPushMatrix()
       glScaled(1.1, 1.1, 1)
       game.resources.herbivore_glow:draw()
@@ -537,20 +566,15 @@ function make_scavenger(game, initial_pos)
       glColor4d(1, 0.77, 0, 0)
       glVertex2d(initial_pos.x - self.pos.x, initial_pos.y - self.pos.y)
       glEnd()
-
       glColor4d(1, 0.77, 0,opacity)
-
       local scale = math.min(0.5+energy/1200,0.8)
       glScaled(scale, scale, 1)
       glRotated(drawn_angle * 180/math.pi, 0, 0, 1)
       game.resources.scavenger_outline:draw()
-
       glColor3d(1, 1, 1)
     end
   end
-  
   return self
-  
 end
 
 --- Foliage -----------------------------------------------------------------
@@ -560,7 +584,7 @@ function make_foliage(game, _pos, foliage_type)
   self.pos = _pos
   self.tags = {'foliage'}
 
-  function self.draw_outline()
+  function self.draw_outline()  
     if foliage_type == 0 then
       glColor3d(0.5, 0.3, 0.15)
     else
