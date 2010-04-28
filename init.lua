@@ -19,7 +19,7 @@ function nwipe(t)
     t[i] = nil
   end
 end
-
+  
 function init_sensing(game)
   local countdown = 0;
   local activity_level = 0;
@@ -29,26 +29,26 @@ function init_sensing(game)
   end
 
   game.add_actor{
-    preupdate = function ()
+    preupdate = function () -- CHANGE TO REMOVEpreupdate to disable sensing
       countdown = countdown - 1
       if countdown <= 0 then
         countdown = 3
         local ret, err = sensor.read_activity_level()
         if ret then
-          local measurement = math.max(0, math.min(1, (ret - 0.001)*140))
+          local measurement = math.max(0, math.min(1, (ret - 0.001)*C.sensitivity_multiplier))
           if measurement < activity_level then
             activity_level = activity_level * 0.95 + measurement * 0.05
           else
             activity_level = activity_level * 0.5 + measurement * 0.5
           end
-	  if activity_level > 0.4 then activity_level = 0.4 end
+          if activity_level > 0.4 then activity_level = 0.4 end
           --print('sensed ' .. activity_level)
         else
           --print(err)
         end
       end
     end,
-    REMOVEDdraw_debug = function ()
+    REMOVEDdraw_debug = function () -- allows blue bar activity meter
       local width = activity_level * C.width
       glColor3d(0, 0, 0.5)
       glBegin(GL_QUADS)

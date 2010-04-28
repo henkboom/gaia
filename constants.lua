@@ -3,6 +3,8 @@ local C = {}
 C.width = 1200
 C.height = 900
 
+C.sensitivity_multiplier = 140
+
 C.scavenger_cell_size = 75
 
 local buffer = 20
