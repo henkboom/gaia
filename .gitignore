@@ -1,0 +1,6 @@
+*~
+*.o
+*.swp
+/gaia
+/sensor.so
+/sounds
