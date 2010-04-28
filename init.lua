@@ -173,7 +173,7 @@ function init_interaction(game)
         math.random(C.lower_bound, C.upper_bound))
       local actors = game.nearby(position, radius, 'interactive')
       table.sort(actors, function (a, b)
-	return v2.sqrmag(a.pos - position) < v2.sqrmag(b.pos - position)
+        return v2.sqrmag(a.pos - position) < v2.sqrmag(b.pos - position)
       end)
       for i = 10, #actors do actors[i] = nil end
       interact_with(actors)
@@ -222,6 +222,13 @@ function init_tracing(game)
   end
 end
 
+function init_sound(game)
+  function game.play_sound(sound, position, volume)
+    volume = volume or 1
+    game.resources[sound]:play(volume * C.volume)
+  end
+end
+
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'trace_cleanup', 'preupdate', 'update'},
   {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
@@ -235,6 +242,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
       {'prey', 'foliage', 'carrion', 'interactive'})
     init_interaction(game)
     init_tracing(game)
+    init_sound(game)
 
     function game.get_bounds_correction(pos)
       return v2(
@@ -255,7 +263,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         glClear(GL_COLOR_BUFFER_BIT)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-	glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_LINE_SMOOTH)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         if(game.is_key_down(string.byte('`'))) then
