@@ -14,5 +14,6 @@ C.lower_bound = -buffer
 C.upper_bound = C.height + buffer
 
 C.volume = 0.8
+C.flip_stereo = true
 
 return C
