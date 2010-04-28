@@ -46,7 +46,7 @@ function make_predator(game, _pos)
     length = length + 1
     if length >= 12 and length % 6 == 0 then
       game.add_actor(make_predator(game, self.pos))
-      game.resources.predator_reproduce:play(1.8*C.volume)
+      game.play_sound('predator_reproduce', self.pos, 1.8)
     end
   end
 
@@ -90,11 +90,11 @@ function make_predator(game, _pos)
         -- PREDATOR EAT SOUNDS
         local random = math.random(3)
         if random == 1 then
-          game.resources.predator_eat1:play(C.volume)
+          game.play_sound('predator_eat1', self.pos)
         elseif random == 2 then
-          game.resources.predator_eat2:play(C.volume)
+          game.play_sound('predator_eat2', self.pos)
         else
-          game.resources.predator_eat3:play(C.volume)
+          game.play_sound('predator_eat3', self.pos)
         end
         
         hunger = hunger - 0.1
@@ -110,7 +110,7 @@ function make_predator(game, _pos)
       game.resources.predator_outline, game.resources.predator_head_fill))
    
     -- PREDATOR STARVE SOUNDS
-    game.resources.predator_starve:play(C.volume)
+    game.play_sound('predator_starve', self.pos)
     self.is_dead = true
   end
 
@@ -133,11 +133,11 @@ function make_predator(game, _pos)
           -- PREDATOR ATTACK SOUNDS
           local random = math.random(3)
           if random == 1 then
-           game.resources.predator_attack1:play(C.volume)
+            game.play_sound('predator_attack1', self.pos)
           elseif random == 2 then
-            game.resources.predator_attack2:play(C.volume)
+            game.play_sound('predator_attack2', self.pos)
           else
-           game.resources.predator_attack3:play(C.volume)
+            game.play_sound('predator_attack3', self.pos)
           end
           
           attacking=true
@@ -318,15 +318,15 @@ function make_herbivore(game, _pos)
       -- HERBIVORE EAT SOUNDS
       local random = math.random(5)
       if random == 1 then
-        game.resources.herbivore_eat1:play(C.volume)
+        game.play_sound('herbivore_eat1', self.pos)
       elseif random == 2 then
-        game.resources.herbivore_eat2:play(C.volume)
+        game.play_sound('herbivore_eat2', self.pos)
       elseif random == 3 then
-        game.resources.herbivore_eat3:play(C.volume)
+        game.play_sound('herbivore_eat3', self.pos)
       elseif random == 4 then
-        game.resources.herbivore_eat4:play(C.volume)
+        game.play_sound('herbivore_eat4', self.pos)
       else
-        game.resources.herbivore_eat5:play(C.volume)
+        game.play_sound('herbivore_eat5', self.pos)
       end
 
       hunger =  hunger - 0.23
@@ -335,7 +335,7 @@ function make_herbivore(game, _pos)
   end
   
   local function reproduce()
-    game.resources.herbivore_reproduce:play(C.volume)
+    game.play_sound('herbivore_reproduce', self.pos)
     game.add_actor(make_herbivore(game, self.pos))
   end 
   
@@ -348,11 +348,11 @@ function make_herbivore(game, _pos)
     -- HERBIVORE STARVE SOUNDS
     local random = math.random(3)
     if random == 1 then
-      game.resources.herbivore_starve1:play(C.volume)
+      game.play_sound('herbivore_starve1', self.pos)
     elseif random == 2 then
-      game.resources.herbivore_starve2:play(C.volume)
+      game.play_sound('herbivore_starve2', self.pos)
     else
-      game.resources.herbivore_starve3:play(C.volume)
+      game.play_sound('herbivore_starve3', self.pos)
     end
     self.is_dead = true
   end
@@ -615,20 +615,20 @@ function make_carrion(game, _pos, angle, scale, outline, fill)
     
     local random = math.random(100)
     if random == 1 then
-      game.resources.scavenger_nibble1:play(0.2*C.volume)
+      game.play_sound('scavenger_nibble1', self.pos, 0.2)
     elseif random == 2 then
-      game.resources.scavenger_nibble2:play(0.2*C.volume)
+      game.play_sound('scavenger_nibble2', self.pos, 0.2)
     elseif random == 3 then
-      game.resources.scavenger_nibble3:play(0.2*C.volume)
+      game.play_sound('scavenger_nibble3', self.pos, 0.2)
     elseif random == 4 then
-      game.resources.scavenger_nibble4:play(0.2*C.volume)
+      game.play_sound('scavenger_nibble4', self.pos, 0.2)
     elseif random == 5 then
-      game.resources.scavenger_nibble5:play(0.2*C.volume)
+      game.play_sound('scavenger_nibble5', self.pos, 0.2)
     end
     
     if health <= 0 then
       self.is_dead = true
-      game.resources.scavenger_leave:play(C.volume)
+      game.play_sound('scavenger_leave', self.pos)
     end
   end
 
