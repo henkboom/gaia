@@ -359,7 +359,12 @@ function make_herbivore(game, _pos)
   
   function self.update()
     eat()
-    hunger = hunger + 0.0004 - interaction_level * 0.0025
+    hunger = hunger + 0.0004
+    local too_many_herbivores = #game.get_actors_by_tag('herbivore') >=
+                                C.herbivore_interaction_limit
+    if not too_many_herbivores then
+      hunger = hunger - interaction_level * 0.0025
+    end
     
     if inner_rotation+1 >= 360 then
       inner_rotation = 0

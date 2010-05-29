@@ -166,7 +166,6 @@ function init_interaction(game)
   local wait = coroutine.yield
 
   local manage_narrative = coroutine.wrap(function ()
-    print(1)
     while true do
       local position = v2(
         math.random(C.left_bound, C.right_bound),
@@ -324,7 +323,6 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
         if interaction_countdown <= 0 then
           interaction_countdown = 4
           game.resources.interaction_wave:play(0 + interaction_level * 4)
-          print(interaction_level)
         end
       end
     }

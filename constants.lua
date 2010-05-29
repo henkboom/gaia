@@ -4,6 +4,7 @@ C.width = 1200
 C.height = 900
 
 C.sensitivity_multiplier = 140
+C.herbivore_interaction_limit = 150
 
 C.scavenger_cell_size = 75
 
