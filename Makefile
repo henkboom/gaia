@@ -14,7 +14,7 @@ gaia:
 	make -C dokidoki-support $(PLATFORM) NAME=../gaia
 
 sensor.so: sensor.c
-	gcc -O2 -Wall -o $@ $^ -I$(LUA_DIR)/src $(MODULE_FLAGS)
+	gcc -O2 -Wall -fPIC -o $@ $^ -I$(LUA_DIR)/src $(MODULE_FLAGS)
 
 clean:
 	make -C dokidoki-support clean NAME=../gaia

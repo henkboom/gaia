@@ -23,14 +23,14 @@
 #define PIXEL(img, x, y, k) (((uchar*)(img)->imageData)[(y)*(img)->widthStep+(x)*(img)->nChannels+(k)])
 
 // locks
-static GLFWmutex ready_to_read;
-static GLFWmutex ready_to_update;
+static GLFWmutex mutex;
+static GLFWcond cond;
+static GLFWmutex condMutex;
 
 // shared data
 // BEWARE THERE BE DEMONS HERE!!!
 static IplImage *lastFrame = NULL;
 static IplImage *diffFrame = NULL;
-static int changed = 0;
 static double activity_level = 0;
 // end shared data
 
@@ -40,8 +40,8 @@ static void GLFWCALL capture_loop(void *arg)
     captureCam = cvCaptureFromCAM(0);
     while(1)
     {
-        glfwLockMutex(ready_to_update);
-
+        glfwWaitCond(cond, condMutex, GLFW_INFINITY);
+        double level = 0;
         if(cvGrabFrame(captureCam))
         {
             IplImage* img = cvRetrieveFrame(captureCam, 0);
@@ -49,8 +49,6 @@ static void GLFWCALL capture_loop(void *arg)
                 cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
             if(!diffFrame) diffFrame =
                 cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
-
-            changed = 1;
 
             // count differences
             int i, j, k;
@@ -69,14 +67,13 @@ static void GLFWCALL capture_loop(void *arg)
             if(lastFrame) cvReleaseImage(&lastFrame);
             lastFrame = cvCloneImage(img);
 
-            activity_level = (double)differences/(area*255);
-        }
-        else
-        {
-            activity_level = 0;
+            level = (double)differences/(area*255);
         }
 
-        glfwUnlockMutex(ready_to_read);
+        glfwLockMutex(mutex);
+        activity_level = level;
+        glfwUnlockMutex(mutex);
+        //printf("put\n");
     }
 }
 
@@ -85,18 +82,19 @@ static double read_activity_level()
     static int initted = 0;
     if(!initted)
     {
-        ready_to_read = glfwCreateMutex();
-        ready_to_update = glfwCreateMutex();
-        glfwLockMutex(ready_to_update);
+        mutex = glfwCreateMutex();
+        cond = glfwCreateCond();
+        condMutex = glfwCreateMutex();
+        glfwLockMutex(condMutex);
         glfwCreateThread(capture_loop, NULL);
         initted = 1;
     }
 
-    glfwLockMutex(ready_to_read);
-
+    glfwLockMutex(mutex);
     double ret = activity_level;
-
-    glfwUnlockMutex(ready_to_update);
+    glfwUnlockMutex(mutex);
+    glfwSignalCond(cond);
+    //printf("get\n");
 
     return ret;
 }
