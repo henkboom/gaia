@@ -90,6 +90,7 @@ function init_collision_detection(game, tags)
 
   game.add_actor{
     preupdate = function ()
+      print(#game.get_actors_by_tag('herbivore'))
       grids = {}
       for _, tag in ipairs(tags) do
         grids[tag] = grids[tag] or {}
@@ -99,12 +100,7 @@ function init_collision_detection(game, tags)
           local j = math.floor(a.pos.y / cell_size)
           grid[i] = grid[i] or {}
           local col = grid[i]
-          col[j] = col[j] or {n=0}
-          local bucket = col[j]
-          if bucket.n < 2 then
-            bucket[bucket.n + 1] = a
-            bucket.n = bucket.n + 1
-          end
+          col[j] = col[j] or a
         end
       end
     end
@@ -126,11 +122,10 @@ function init_collision_detection(game, tags)
         for j = minj, maxj do
           --game.trace_circle(pos, v2((i+0.5) * cell_size, (j+0.5) * cell_size), 2)
           if grid[i][j] then
-            for _, a in ipairs(grid[i][j]) do
-              if not a.is_dead and v2.sqrmag(a.pos - pos) <= radius*radius then
-                actors[n] = a
-                n = n + 1
-              end
+            local a = grid[i][j]
+            if a and not a.is_dead and v2.sqrmag(a.pos - pos) <= radius*radius then
+              actors[n] = a
+              n = n + 1
             end
           end
         end
