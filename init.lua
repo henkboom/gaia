@@ -8,10 +8,11 @@ local v2 = require 'dokidoki.v2'
 local C = require 'constants'
 local creatures = require 'creatures'
 local sensor = require 'sensor'
+local capture = require 'capture'
 
 import 'gl'
 import 'dokidoki.base'
-kernel.set_video_mode(1024, 768)
+kernel.set_video_mode(640, 480)
 kernel.set_ratio(C.width/C.height)
 
 function nwipe(t)
@@ -19,7 +20,23 @@ function nwipe(t)
     t[i] = nil
   end
 end
-  
+
+function init_capture(game)
+  local started = false
+  game.add_actor{
+    update = function ()
+      if game.is_key_down(string.byte("R")) then
+        started = true
+      end
+    end,
+    draw_capture = function ()
+      if started then
+        capture.capture_frame()
+      end
+    end
+  }
+end
+
 function init_sensing(game)
   local countdown = 0;
   local activity_level = 0;
@@ -33,7 +50,7 @@ function init_sensing(game)
       countdown = countdown - 1
       if countdown <= 0 then
         countdown = 3
-        local ret, err = sensor.read_activity_level()
+        local ret, err = 10000 --sensor.read_activity_level()
         if ret then
           local measurement = math.max(0, math.min(1, (ret - 0.001)*C.sensitivity_multiplier))
           if measurement < activity_level then
@@ -247,8 +264,8 @@ end
 
 kernel.start_main_loop(actor_scene.make_actor_scene(
   {'trace_cleanup', 'preupdate', 'update'},
-  {'draw_setup', 'draw_outline', 'draw_fill', 'draw_inner_outline',
-   'draw_inner_fill', 'draw_debug'},
+  {'draw_capture', 'draw_setup', 'draw_outline', 'draw_fill',
+   'draw_inner_outline', 'draw_inner_fill', 'draw_debug'},
   function (game)
     math.randomseed(os.time())
     game.resources = require 'resources'
@@ -259,6 +276,7 @@ kernel.start_main_loop(actor_scene.make_actor_scene(
     init_interaction(game)
     init_tracing(game)
     init_sound(game)
+    init_capture(game)
 
     function game.get_bounds_correction(pos)
       return v2(
