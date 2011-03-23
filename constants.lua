@@ -1,20 +1,33 @@
-local C = {}
+width = 1200
+height = 900
 
-C.width = 1200
-C.height = 900
+sensitivity_multiplier = 140
+herbivore_interaction_limit = 150
 
-C.sensitivity_multiplier = 140
-C.herbivore_interaction_limit = 150
-
-C.scavenger_cell_size = 75
+scavenger_cell_size = 75
 
 local buffer = 20
-C.left_bound = -buffer
-C.right_bound= C.width + buffer
-C.lower_bound = -buffer
-C.upper_bound = C.height + buffer
+left_bound = -buffer
+right_bound= width + buffer
+lower_bound = -buffer
+upper_bound = height + buffer
 
-C.volume = 0.8
-C.flip_stereo = true
+volume = 0.8
+flip_stereo = true
 
-return C
+draw_phases = {
+  creature_bg_glow_setup = 1,
+  creature_bg_glow = 2,
+  creature_bg_mask_setup = 3,
+  creature_bg_mask = 4,
+  creature_fg_glow_setup = 5,
+  creature_fg_glow = 6,
+  creature_fg_mask_setup = 7,
+  creature_fg_mask = 8,
+  debug = 9
+}
+
+foliage_colors = {
+  normal = {0.5, 0.3, 0.15},
+  corpse = {0.8, 0.3, 0.15}
+}

@@ -1,0 +1,63 @@
+--function init_interaction(game)
+--  local radius = 10000
+--
+--  local interaction_set = {}
+--  
+--  local function interact_with(actors)
+--    for a in pairs(interaction_set) do
+--      a.set_interaction_level(0)
+--      interaction_set[a] = nil
+--    end
+--    for _, a in ipairs(actors) do
+--      interaction_set[a] = true
+--    end
+--  end
+--
+--  local function update_interaction_level ()
+--    for a in pairs(interaction_set) do
+--      a.set_interaction_level(0.001 + game.get_activity_level())
+--      game.trace_circle(a.pos, a.pos, 10)
+--    end
+--  end
+--
+--  local wait = coroutine.yield
+--
+--  local manage_narrative = coroutine.wrap(function ()
+--    while true do
+--      local position = v2(
+--        math.random(C.left_bound, C.right_bound),
+--        math.random(C.lower_bound, C.upper_bound))
+--      local actors = game.nearby(position, radius, 'interactive')
+--      table.sort(actors, function (a, b)
+--        return v2.sqrmag(a.pos - position) < v2.sqrmag(b.pos - position)
+--      end)
+--      for i = 10, #actors do actors[i] = nil end
+--      interact_with(actors)
+--      for i = 1, 8*60 do
+--        wait()
+--      end
+--    end
+--  end)
+--
+--  game.add_actor{
+--    preupdate = function ()
+--      manage_narrative()
+--      update_interaction_level()
+--    end
+--  }
+--end
+
+-- interaction sound stuff
+--local interaction_countdown = 0
+--local interaction_level = 0
+--game.add_actor{
+--  update = function ()
+--    interaction_level = interaction_level * 0.99 +
+--                        game.get_activity_level() * 0.01
+--    interaction_countdown = interaction_countdown - interaction_level
+--    if interaction_countdown <= 0 then
+--      interaction_countdown = 4
+--      game.resources.interaction_wave:play(0 + interaction_level * 4)
+--    end
+--  end
+--}

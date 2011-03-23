@@ -1,0 +1,65 @@
+PROJECT_NAME := gaia
+
+LIBRARIES += \
+    dokidoki
+
+LUA_SRC += \
+    apocalypse_recovery.lua \
+    collision_detection.lua \
+    constants.lua \
+    creature_renderer.lua \
+    creature_render_setup.lua \
+    foliage_growth.lua \
+    foliage.lua \
+    gaia.lua \
+    init.lua \
+    renderer.lua \
+    resources.lua \
+    sensing_interaction.lua \
+    sensing.lua \
+    sound.lua \
+    tracing.lua
+
+C_SRC += \
+    sensor.c
+
+LUA_NATIVE_MODULES += \
+	sensor
+
+RESOURCES += \
+    sounds/herbivore_eat1.wav \
+    sounds/herbivore_eat2.wav \
+    sounds/herbivore_eat3.wav \
+    sounds/herbivore_eat4.wav \
+    sounds/herbivore_eat5.wav \
+    sounds/herbivore_reproduce.wav \
+    sounds/herbivore_starve1.wav \
+    sounds/herbivore_starve2.wav \
+    sounds/herbivore_starve3.wav \
+    sounds/interaction_fast_attack.wav \
+    sounds/predator_attack1.wav \
+    sounds/predator_attack2.wav \
+    sounds/predator_attack3.wav \
+    sounds/predator_eat1.wav \
+    sounds/predator_eat2.wav \
+    sounds/predator_eat3.wav \
+    sounds/predator_reproduce.wav \
+    sounds/predator_starve.wav \
+    sounds/scavenger_nibble1.wav \
+    sounds/scavenger_nibble2.wav \
+    sounds/scavenger_nibble3.wav \
+    sounds/scavenger_nibble4.wav \
+    sounds/scavenger_nibble5.wav \
+    sprites/foliage_outline.png \
+    sprites/herbivore_fill.png \
+    sprites/herbivore_glow.png \
+    sprites/herbivore_inner_fill.png \
+    sprites/herbivore_inner_outline.png \
+    sprites/herbivore_outline.png \
+    sprites/predator_cell_fill.png \
+    sprites/predator_head_fill.png \
+    sprites/predator_head_outline.png \
+    sprites/scavenger_outline.png
+
+LINUX_LDFLAGS += -lhighgui
+MACOSX_LDFLAGS += -lhighgui -lcv -lcxcore

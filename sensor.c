@@ -4,14 +4,6 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#ifdef __APPLE__
-#include "OpenGL/gl.h"
-#include "OpenGL/glu.h"
-#else
-#include "GL/gl.h"
-#include "GL/glu.h"
-#endif
-
 #include "GL/glfw.h"
 
 #include <lua.h>

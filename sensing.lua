@@ -1,0 +1,63 @@
+--function init_sensing(game)
+--  local countdown = 0;
+--  local activity_level = 0;
+--
+--  function game.get_activity_level()
+--    return activity_level
+--  end
+--
+--  game.add_actor{
+--    preupdate = function () -- CHANGE TO REMOVEpreupdate to disable sensing
+--      countdown = countdown - 1
+--      if countdown <= 0 then
+--        countdown = 3
+--        local ret, err = sensor.read_activity_level()
+--        if ret then
+--          local measurement = math.max(0, math.min(1, (ret - 0.001)*C.sensitivity_multiplier))
+--          if measurement < activity_level then
+--            activity_level = activity_level * 0.95 + measurement * 0.05
+--          else
+--            activity_level = activity_level * 0.5 + measurement * 0.5
+--          end
+--          if activity_level > 0.4 then activity_level = 0.4 end
+--          --print('sensed ' .. activity_level)
+--        else
+--          --print(err)
+--        end
+--      end
+--    end,
+--    REMOVEDdraw_debug = function () -- allows blue bar activity meter
+--      local width = activity_level * C.width
+--      glColor3d(0, 0, 0.5)
+--      glBegin(GL_QUADS)
+--      glVertex2d(0, 0)
+--      glVertex2d(width, 0)
+--      glVertex2d(width, 10)
+--      glVertex2d(0, 10)
+--      glEnd()
+--      glColor3d(1, 1, 1)
+--      local tex = nil
+--      if game.is_key_down(string.byte("1")) then
+--        tex = sensor.get_texture(false)
+--      elseif game.is_key_down(string.byte("2")) then
+--        tex = sensor.get_texture(true)
+--      end
+--      if tex then
+--        glEnable(GL_TEXTURE_2D)
+--        glBindTexture(GL_TEXTURE_2D, tex)
+--        glBegin(GL_QUADS)
+--        glTexCoord2d(0, 1)
+--        glVertex2d(0, 0)
+--        glTexCoord2d(1, 1)
+--        glVertex2d(C.width, 0)
+--        glTexCoord2d(1, 0)
+--        glVertex2d(C.width, C.height)
+--        glTexCoord2d(0, 0)
+--        glVertex2d(0, C.height)
+--        glEnd()
+--        glBindTexture(GL_TEXTURE_2D, 0)
+--        glDisable(GL_TEXTURE_2D)
+--      end
+--    end
+--  }
+--end

@@ -1,0 +1,51 @@
+--function init_collision_detection(game, tags)
+--  local cell_size = 32
+--  local grids
+--
+--  game.add_actor{
+--    preupdate = function ()
+--      print(#game.get_actors_by_tag('herbivore'))
+--      grids = {}
+--      for _, tag in ipairs(tags) do
+--        grids[tag] = grids[tag] or {}
+--        local grid = grids[tag]
+--        for _, a in ipairs(game.get_actors_by_tag(tag)) do
+--          local i = math.floor(a.pos.x / cell_size)
+--          local j = math.floor(a.pos.y / cell_size)
+--          grid[i] = grid[i] or {}
+--          local col = grid[i]
+--          col[j] = col[j] or a
+--        end
+--      end
+--    end
+--  }
+--
+--  function game.nearby(pos, radius, tag)
+--    local mini = math.floor((pos.x - radius) / cell_size)
+--    local maxi = math.ceil((pos.x + radius) / cell_size)
+--    local minj = math.floor((pos.y - radius) / cell_size)
+--    local maxj = math.ceil((pos.y + radius) / cell_size)
+--
+--    local grid = grids[tag]
+--    assert(grid, 'game.nearby called on non-indexed tag')
+--    local actors = {}
+--    local n = 1
+--
+--    for i = mini, maxi do
+--      if grid[i] then
+--        for j = minj, maxj do
+--          --game.trace_circle(pos, v2((i+0.5) * cell_size, (j+0.5) * cell_size), 2)
+--          if grid[i][j] then
+--            local a = grid[i][j]
+--            if a and not a.is_dead and v2.sqrmag(a.pos - pos) <= radius*radius then
+--              actors[n] = a
+--              n = n + 1
+--            end
+--          end
+--        end
+--      end
+--    end
+--
+--    return actors
+--  end
+--end
