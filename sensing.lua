@@ -1,6 +1,10 @@
 local gl = require 'gl'
 local log = require 'log'
-local sensor = require 'sensor'
+--local sensor = require 'sensor'
+local sensor = {
+  read_activity_level = function () return 0 end,
+  get_texture = function () return nil end
+}
 
 local C = game.constants
 

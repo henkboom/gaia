@@ -27,16 +27,16 @@ LUA_SRC += \
     sprite.lua \
     tracing.lua
 
-ifeq ($(PLATFORM), MINGW)
-CXX_SRC += \
-    sensor_win.cpp
-else
-C_SRC += \
-    sensor.c
-endif
+#ifeq ($(PLATFORM), MINGW)
+#CXX_SRC += \
+#    sensor_win.cpp
+#else
+#C_SRC += \
+#    sensor.c
+#endif
 
-LUA_NATIVE_MODULES += \
-	sensor
+#LUA_NATIVE_MODULES += \
+#	sensor
 
 RESOURCES += \
     sounds/herbivore_eat1.wav \
@@ -75,8 +75,8 @@ RESOURCES += \
     sprites/predator_head_outline.png \
     sprites/scavenger_outline.png
 
-LINUX_LDFLAGS += -lhighgui
-MACOSX_LDFLAGS += -lhighgui -lcv -lcxcore
-MINGW_LDFLAGS += \
-    -lvideoInput -lglfw -lglu32 -lopengl32 -lole32 -loleaut32 -lstrmiids \
-    -luuid
+#LINUX_LDFLAGS += -lhighgui
+#MACOSX_LDFLAGS += -lhighgui -lcv -lcxcore
+#MINGW_LDFLAGS += \
+#    -lvideoInput -lglfw -lglu32 -lopengl32 -lole32 -loleaut32 -lstrmiids \
+#    -luuid

@@ -1,6 +1,8 @@
 require 'dokidoki.module' [[]]
-local jit = require 'jit'
-jit.off()
+--local jit = require 'jit'
+--jit.off()
+require 'jit.v'
+jit.v.on()
 
 local dokidoki_kernel = require 'dokidoki.kernel'
 local dokidoki_game = require 'dokidoki.game'
