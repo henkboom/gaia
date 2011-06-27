@@ -4,7 +4,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#include "GL/glfw.h"
+#include <GL/glfw.h>
 
 #include <lua.h>
 #include <lauxlib.h>

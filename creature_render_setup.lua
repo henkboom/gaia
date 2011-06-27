@@ -16,6 +16,13 @@ game.renderer.add_job(self, phases.creature_bg_glow_setup, function ()
   gl.glMatrixMode(gl.GL_MODELVIEW)
   gl.glLoadIdentity()
   gl.glColor3d(1, 1, 1)
+end)
+
+game.renderer.add_job(self, phases.creature_interaction_glow_setup, function ()
+  gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
+end)
+
+game.renderer.add_job(self, phases.creature_bg_glow_setup, function ()
   gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
 end)
 
@@ -25,10 +32,6 @@ end)
 
 game.renderer.add_job(self, phases.creature_fg_glow_setup, function ()
   gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE)
-end)
-
-game.renderer.add_job(self, phases.creature_fg_mask_setup, function ()
-  gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 end)
 
 game.renderer.add_job(self, phases.debug, function ()

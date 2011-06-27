@@ -5,23 +5,35 @@ LIBRARIES += \
 
 LUA_SRC += \
     apocalypse_recovery.lua \
+    carrion.lua \
     collision_detection.lua \
     constants.lua \
-    creature_renderer.lua \
     creature_render_setup.lua \
+    fast_forward.lua \
     foliage_growth.lua \
     foliage.lua \
     gaia.lua \
+    herbivore.lua \
     init.lua \
+    pause.lua \
+    predator.lua \
+    predator_tail.lua \
     renderer.lua \
     resources.lua \
+    scavenger.lua \
     sensing_interaction.lua \
     sensing.lua \
     sound.lua \
+    sprite.lua \
     tracing.lua
 
+ifeq ($(PLATFORM), MINGW)
+CXX_SRC += \
+    sensor_win.cpp
+else
 C_SRC += \
     sensor.c
+endif
 
 LUA_NATIVE_MODULES += \
 	sensor
@@ -56,6 +68,8 @@ RESOURCES += \
     sprites/herbivore_inner_fill.png \
     sprites/herbivore_inner_outline.png \
     sprites/herbivore_outline.png \
+    sprites/herbivore_detail1.png \
+    sprites/herbivore_detail2.png \
     sprites/predator_cell_fill.png \
     sprites/predator_head_fill.png \
     sprites/predator_head_outline.png \
@@ -63,3 +77,6 @@ RESOURCES += \
 
 LINUX_LDFLAGS += -lhighgui
 MACOSX_LDFLAGS += -lhighgui -lcv -lcxcore
+MINGW_LDFLAGS += \
+    -lvideoInput -lglfw -lglu32 -lopengl32 -lole32 -loleaut32 -lstrmiids \
+    -luuid

@@ -2,6 +2,7 @@
 build:
 
 # OS detection, cut at 7 chars for mingw
+ifndef PLATFORM
 UNAME := $(shell uname | cut -c 1-7)
 ifeq ($(UNAME), Linux)
 PLATFORM := LINUX
@@ -11,6 +12,7 @@ PLATFORM := MACOSX
 endif
 ifeq ($(UNAME), MINGW32)
 PLATFORM := MINGW
+endif
 endif
 
 # initialize variables, load project settings
@@ -31,10 +33,12 @@ include project.dd
 include $(LIBRARIES:%=%/project.dd)
 
 # now initialize other variables from the project settings
+ifndef TARGET_DIR
 TARGET_DIR := $(PROJECT_NAME)
+endif
 TARGET_EXE := $(TARGET_DIR)/$(PROJECT_NAME)
 
-OBJS := $(C_SRC:.c=.o)
+OBJS := $(C_SRC:.c=.o) $(CXX_SRC:.cpp=.o)
 DEPS := $(C_SRC:.c=.P)
 LUA_TARGETS=$(LUA_SRC:%=$(TARGET_DIR)/%)
 RESOURCE_TARGETS=$(RESOURCES:%=$(TARGET_DIR)/%)
@@ -46,11 +50,19 @@ resources: $(LUA_TARGETS) $(RESOURCE_TARGETS)
 $(TARGET_EXE): $(OBJS)
 	@echo linking $@...
 	@mkdir -p `dirname $@`
-	@gcc -o $@ $^ $(LDFLAGS) $($(PLATFORM)_LDFLAGS)
+	@$(CXX) -o $@ $^ $(LDFLAGS) $($(PLATFORM)_LDFLAGS)
 
 %.o: %.c
 	@echo building $@...
-	@gcc -MD -o $@ $< -c $(CFLAGS) $($(PLATFORM)_CFLAGS)
+	$(CC) -MD -o $@ $< -c $(CFLAGS) $($(PLATFORM)_CFLAGS)
+	@cp $*.d $*.P;
+	@sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	     -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P
+	@rm -f $*.d
+
+%.o: %.cpp
+	@echo building $@...
+	$(CXX) -MD -o $@ $< -c $(CFLAGS) $($(PLATFORM)_CFLAGS)
 	@cp $*.d $*.P;
 	@sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 	     -e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P

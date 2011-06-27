@@ -5,14 +5,14 @@ local dokidoki_base = require 'dokidoki.base'
 local render_jobs = {}
 local needs_sorting = false
 
-function add_job(component, order, callback)
+function add_job(component, phase, callback)
   assert(component)
-  assert(type(order) == 'number')
+  assert(type(phase) == 'number')
   assert(callback)
 
   render_jobs[#render_jobs+1] = {
     component=component,
-    order=order,
+    phase=phase,
     callback=callback
   }
   needs_sorting = true
@@ -20,7 +20,7 @@ end
 
 function draw()
   if needs_sorting then
-    table.sort(render_jobs, function (a, b) return a.order < b.order end)
+    table.sort(render_jobs, function (a, b) return a.phase < b.phase end)
     needs_sorting = false
   end
 
@@ -35,8 +35,9 @@ function draw()
   end
 
   if needs_culling then
+    --print('culling')
     render_jobs = dokidoki_base.ifilter(
-      function (c) return not c.dead end,
+      function (j) return not j.component.dead end,
       render_jobs)
   end
 end
